@@ -45,8 +45,9 @@ public class UPAEditorWindow : EditorWindow {
 	private static int gridBGIndex = 0;
 	private static string[] gridBGStrings = new string[] {"Black", "White"};
 	private static Color gridBGColor = Color.black;
-
-
+	
+	private static GUIStyle style = new GUIStyle();
+	
 
 	private static Rect lastPos = new Rect ();	//Used for checking if window has been resized
 
@@ -184,8 +185,9 @@ public class UPAEditorWindow : EditorWindow {
 			tool = UPATool.Eraser;
 		}
 		GUI.backgroundColor = Color.white;
-
-		GUI.Label (new Rect (530, 11, 150, 30), "Use WASD to navigate.");
+		
+		style.normal.textColor = new Color (0.7f, 0.7f, 0.7f);
+		GUI.Label (new Rect (525, 11, 150, 30), "Use WASD to navigate.", style);
 
 		if (GUI.Button (new Rect (670, 4, 80, 30), "Center View")) {
 			gridOffsetX = 0;
