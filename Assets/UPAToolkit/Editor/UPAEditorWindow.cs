@@ -2,7 +2,6 @@
 // This script handles the main Pixel Art Editor.
 // It selects tools, finds the right pixels to color, handles input events & draws the toolbar gui.
 // TODO: Tidy things up. Split functionality into smaller code portions. Make even a bit of optimization?
-// TODO: Add method for opening images.
 //-----------------------------------------------------------------
 
 using UnityEngine;
@@ -20,10 +19,10 @@ public class UPAEditorWindow : EditorWindow {
 	public static UPAEditorWindow window;	// The static instance of the window
 
 	public static UPAImage CurrentImg;		// The img currently being edited
-
-
+	
+	
 	// VIEW & NAVIGATION SETTINGS
-
+	[SerializeField]
 	private static float _gridSpacing = 20f;
 	public static float gridSpacing {
 		get { return _gridSpacing; }
@@ -31,7 +30,7 @@ public class UPAEditorWindow : EditorWindow {
 	}
 	public static float gridOffsetY = 0;
 	public static float gridOffsetX = 0;
-
+	
 
 	// PAINTING & VISUAL SETTINGS
 
@@ -53,7 +52,7 @@ public class UPAEditorWindow : EditorWindow {
 
 	// Add Pixel Art Editor to the Window menu
 	[MenuItem ("Window/Pixel Art Editor")]
-	static void Init () {
+	public static void Init () {
 		// Get existing open window or if none, make new one
 		window = (UPAEditorWindow)EditorWindow.GetWindow (typeof (UPAEditorWindow));
 		window.title = "Pixel Art Editor";
@@ -69,7 +68,7 @@ public class UPAEditorWindow : EditorWindow {
 				UPAImageCreationWindow.Init ();
 			}
 			if ( GUI.Button (new Rect (window.position.width / 2f + 10, window.position.height /2f - 25, 130, 50), "Open Image") ) {
-				Debug.Log ("TODO: Open image.");
+				CurrentImg = UPASession.OpenImage ();
 			}
 
 			return;
@@ -147,7 +146,9 @@ public class UPAEditorWindow : EditorWindow {
 			UPAImageCreationWindow.Init ();
 		}
 		if ( GUI.Button (new Rect (60, 4, 50, 30), "Open") ) {
-			Debug.Log ("Implement open file.");
+			CurrentImg = UPASession.OpenImage ();
+			if (CurrentImg == null)
+				return;
 		}
 		if ( GUI.Button (new Rect (115, 4, 50, 30), "Export") ) {
 			UPAExportWindow.Init();

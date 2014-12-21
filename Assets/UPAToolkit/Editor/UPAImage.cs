@@ -2,15 +2,14 @@
 // This class stores all information about the image.
 // It has a full pixel map, width & height properties and some private project data.
 // It also hosts functions for calculating how the pixels should be visualized in the editor.
-// TODO: Turn into scriptable object for easy instiation and data serialization.
-// TODO: Make pixel map one directional to serialize it.
 //-----------------------------------------------------------------
 
 using UnityEngine;
-using System.Collections;
+using UnityEditor;
 
 // Each Pixel has a color & a rect to represent
 // it's graphics in the editor window.
+[System.Serializable]
 public struct Pixel {
 	public Rect rect;
 	public Color color;
@@ -38,18 +37,24 @@ public class UPAImage : ScriptableObject {
 	public Pixel[] map;
 	
 	// Class constructor
-	public UPAImage (int w, int h) {
+	public UPAImage () {
+		// nothing
+	}
+	
+	public void Init (int w, int h) {
 		width = w;
 		height = h;
-		
+	
 		map = new Pixel[w * h];
-
+		
 		// Set all pixels to an alpha of 0
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
 				map [x + y * w].color = Color.clear;
 			}
 		}
+		
+		EditorUtility.SetDirty (this);
 	}
 
 	// Calculate how the pixels should be laid out in the editor
@@ -64,6 +69,8 @@ public class UPAImage : ScriptableObject {
 				map[x + y * width].rect = new Rect (xPos, yPos, gridSpacing - 1, gridSpacing - 1);
 			}
 		}
+		
+		EditorUtility.SetDirty (this);
 	}
 
 	// Calculate the full extend of all the pixels laid out
@@ -83,5 +90,7 @@ public class UPAImage : ScriptableObject {
 				}
 			}
 		}
+		
+		EditorUtility.SetDirty (this);
 	}
 }
