@@ -17,7 +17,7 @@ public struct Pixel {
 }
 
 [System.Serializable]
-public class UPAImage {
+public class UPAImage : ScriptableObject {
 	// Helper getters (TODO: Store these inside the UPAImage to make settings stick to their projects.)
 	public float gridSpacing {
 		get { return UPAEditorWindow.gridSpacing + 1f; }
@@ -35,19 +35,19 @@ public class UPAImage {
 	// Important data
 	public int width;
 	public int height;
-	public Pixel[,] map;
+	public Pixel[] map;
 	
 	// Class constructor
 	public UPAImage (int w, int h) {
 		width = w;
 		height = h;
 		
-		map = new Pixel[w,h];
+		map = new Pixel[w * h];
 
 		// Set all pixels to an alpha of 0
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
-				map [x,y].color = Color.clear;
+				map [x + y * w].color = Color.clear;
 			}
 		}
 	}
@@ -61,7 +61,7 @@ public class UPAImage {
 				yPos += gridOffsetY;
 				xPos += gridOffsetX;
 
-				map[x,y].rect = new Rect (xPos, yPos, gridSpacing - 1, gridSpacing - 1);
+				map[x + y * width].rect = new Rect (xPos, yPos, gridSpacing - 1, gridSpacing - 1);
 			}
 		}
 	}
@@ -78,8 +78,8 @@ public class UPAImage {
 	public void ColorPixel (Color color, Vector2 pos) {
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
-				if (map[x,y].rect.Contains (pos)) {
-					map [x,y].color = color;
+				if (map[x + y * width].rect.Contains (pos)) {
+					map [x + y * width].color = color;
 				}
 			}
 		}

@@ -115,27 +115,27 @@ public class UPAEditorWindow : EditorWindow {
 		
 		for (int x = 0; x < CurrentImg.width; x++) {
 			for (int y = 0; y < CurrentImg.height; y++) {
-				if (CurrentImg.map[x,y].rect.size == Vector2.zero) {
+				if (CurrentImg.map[x + y * CurrentImg.width].rect.size == Vector2.zero) {
 					updateRects = true;
 					continue;
 				}
 
 				// Is the rect visible on screen?
-				if (!window.position.Contains (new Vector2 (CurrentImg.map[x,y].rect.x, CurrentImg.map[x,y].rect.y))
-				    && !window.position.Contains (new Vector2 (CurrentImg.map[x,y].rect.x + CurrentImg.map[x,y].rect.width,
-				                                           CurrentImg.map[x,y].rect.y + CurrentImg.map[x,y].rect.height)))
+				if (!window.position.Contains (new Vector2 (CurrentImg.map[x + y * CurrentImg.width].rect.x, CurrentImg.map[x + y * CurrentImg.width].rect.y))
+				    && !window.position.Contains (new Vector2 (CurrentImg.map[x + y * CurrentImg.width].rect.x + CurrentImg.map[x + y * CurrentImg.width].rect.width,
+				                                           CurrentImg.map[x + y * CurrentImg.width].rect.y + CurrentImg.map[x + y * CurrentImg.width].rect.height)))
 				{
 					continue;
 				}
 				    
-				Color c = CurrentImg.map[x, y].color;
+				Color c = CurrentImg.map[x + y * CurrentImg.width].color;
 				float newR = c.a * c.r + (1 - c.a) * bgColor.r;
 				float newG = c.a * c.g + (1 - c.a) * bgColor.g;
 				float newB = c.a * c.b + (1 - c.a) * bgColor.b;
 
 				Color fC = new Color (newR, newG, newB, 1);
 				
-				EditorGUI.DrawRect (CurrentImg.map[x,y].rect, fC);
+				EditorGUI.DrawRect (CurrentImg.map[x + y * CurrentImg.width].rect, fC);
 			}
 		}
 
