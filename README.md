@@ -10,7 +10,7 @@ This project is open for contributions. See [this guide](https://guides.github.c
 Coming soon!
 
 ###Software
-- [Unity](http://unity3d.com). Fully compatible with Unity free version.
+- The project is fully compatible with [Unity](http://unity3d.com) free version.
 - Some sprites are saved in .psd (Photoshop) format. These files can be ignored.
 
 ###Copyright
