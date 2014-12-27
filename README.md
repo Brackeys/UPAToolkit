@@ -16,4 +16,4 @@ Coming soon!
 - Some sprites are saved in .psd (Photoshop) format. These files can be ignored.
 
 ###Copyright
-See LICENSE.md
+See LICENSE
