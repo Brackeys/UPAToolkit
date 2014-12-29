@@ -56,14 +56,27 @@ public class UPAEditorWindow : EditorWindow {
 		// Get existing open window or if none, make new one
 		window = (UPAEditorWindow)EditorWindow.GetWindow (typeof (UPAEditorWindow));
 		window.title = "Pixel Art Editor";
+
+		string path = EditorPrefs.GetString ("currentImgPath", "");
+		Debug.Log (path);
+		if (path.Length != 0)
+			CurrentImg = UPASession.OpenImageAtPath (path);
 	}
-	
+
 	// TODO: Add comments
 	void OnGUI () {
 		if (window == null)
 			Init ();
 
 		if (CurrentImg == null || CurrentImg.map == null) { 
+
+			string curImgPath = EditorPrefs.GetString ("currentImgPath", "");
+
+			if (curImgPath.Length != 0) {
+				CurrentImg = UPASession.OpenImageAtPath (curImgPath);
+				return;
+			}
+
 			if ( GUI.Button (new Rect (window.position.width / 2f - 140, window.position.height /2f - 25, 130, 50), "New Image") ) {
 				UPAImageCreationWindow.Init ();
 			}

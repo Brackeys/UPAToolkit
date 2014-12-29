@@ -3,8 +3,9 @@
 
 
 - Add BoxBrush for coloring multiple pixels at once
-- Make UPAImage class a ScriptableObject
 - Add Exporting capability (.jpg & .png)
-- Add the abillity to Open image files
+- Save painting settings in img file
+- Add image preview on asset select
+- Code cleanup & optimization (fuuuuun)
 
 Release? Soon, hopefully :)

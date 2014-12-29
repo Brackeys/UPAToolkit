@@ -22,30 +22,6 @@ public class UPAImageCreationWindow : EditorWindow {
 		window.ShowPopup();
 	}
 	
-	public void CreateImage () {
-		string path = EditorUtility.SaveFilePanel ("Create UPAImage",
-		                                           "Assets/", "PixelImage.asset", "asset");
-		if (path == "") {
-			return;
-		}
-		
-		path = FileUtil.GetProjectRelativePath(path);
-		
-		UPAImage img = CreateInstance<UPAImage>();
-		AssetDatabase.CreateAsset (img, path);
-		
-		AssetDatabase.SaveAssets();
-		
-		img.Init(xRes, yRes);
-		EditorUtility.SetDirty(img);
-		UPAEditorWindow.CurrentImg = img;
-		
-		if (UPAEditorWindow.window != null)
-			UPAEditorWindow.window.Repaint();
-		else
-			UPAEditorWindow.Init();
-	}
-	
 	void OnGUI () {
 		if (window == null)
 			Init ();
@@ -61,7 +37,7 @@ public class UPAImageCreationWindow : EditorWindow {
 		
 		if ( GUILayout.Button ("Create", GUILayout.Height (30))) {
 			this.Close();
-			CreateImage ();
+			UPASession.CreateImage (xRes, yRes);
 		}
 	}
 }
