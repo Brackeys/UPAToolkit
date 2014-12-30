@@ -7,14 +7,6 @@
 using UnityEngine;
 using UnityEditor;
 
-// Each Pixel has a color & a rect to represent
-// it's graphics in the editor window.
-[System.Serializable]
-public struct Pixel {
-	public Rect rect;
-	public Color color;
-}
-
 [System.Serializable]
 public class UPAImage : ScriptableObject {
 
@@ -22,16 +14,20 @@ public class UPAImage : ScriptableObject {
 	public Rect window {
 		get { return UPAEditorWindow.window.position; }
 	}
+	
 
 	// IMAGE DATA
+	
 	[HideInInspector]
 	public int width;
 	[HideInInspector]
 	public int height;
 	[HideInInspector]
 	public Pixel[] map;
+	
 
 	// VIEW & NAVIGATION SETTINGS
+	
 	[HideInInspector]
 	[SerializeField]
 	private float _gridSpacing = 20f;
@@ -43,6 +39,17 @@ public class UPAImage : ScriptableObject {
 	public float gridOffsetY = 0;
 	[HideInInspector]
 	public float gridOffsetX = 0;
+	
+	
+	// PAINTING SETTINGS
+	
+	[HideInInspector]
+	public Color selectedColor = new Color (1,0,0,1);
+	[HideInInspector]
+	public UPATool tool = UPATool.PaintBrush;
+	[HideInInspector]
+	public int gridBGIndex = 0;
+	
 	
 	// Class constructor
 	public UPAImage () {

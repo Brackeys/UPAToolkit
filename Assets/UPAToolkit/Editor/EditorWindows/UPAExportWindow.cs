@@ -7,11 +7,6 @@
 using UnityEngine;
 using UnityEditor;
 
-enum TextureType {
-	sprite = 0,
-	texture = 1,
-}
-
 public class UPAExportWindow : EditorWindow {
 	
 	public static UPAExportWindow window;

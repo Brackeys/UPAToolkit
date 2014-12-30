@@ -7,13 +7,6 @@
 using UnityEngine;
 using UnityEditor;
 
-// Used for switching tools
-enum UPATool {
-	PaintBrush,
-	Eraser,
-	BoxBrush, // TODO: Add BoxBrush
-}
-
 public class UPAEditorWindow : EditorWindow {
 
 	public static UPAEditorWindow window;	// The static instance of the window
@@ -35,29 +28,40 @@ public class UPAEditorWindow : EditorWindow {
 		get { return CurrentImg.gridOffsetY; }
 		set { CurrentImg.gridOffsetY = value; }
 	}
+	
+	private UPATool tool {
+		get { return CurrentImg.tool; }
+		set { CurrentImg.tool = value; }
+	}
+	private Color32 selectedColor {
+		get { return CurrentImg.selectedColor; }
+		set { CurrentImg.selectedColor = value; }
+	}
+	private int gridBGIndex {
+		get { return CurrentImg.gridBGIndex; }
+		set { CurrentImg.gridBGIndex = value; }
+	}
 
 
-	// PAINTING & VISUAL SETTINGS
-
-	public static Color selectedColor = new Color (1,0,0,1);
+	// PRIVATE VISUAL SETTINGS
 
 	private static Color bgColor = new Color (0.9f, 0.9f, 0.9f, 1);
 	private static Color32 toolbarColor = new Color32 (50, 50, 50, 255);
 
-	private static UPATool tool = UPATool.PaintBrush;
-
-	private static int gridBGIndex = 0;
 	private static string[] gridBGStrings = new string[] {"Black", "White"};
 	private static Color gridBGColor = Color.black;
 	
 	private static GUIStyle style = new GUIStyle();
 
 
+	// MISC TEMP VARIABLES
+
 	//Used for checking if window has been resized
 	private static Rect lastPos = new Rect ();
 
 
-	// Add Pixel Art Editor to the Window menu
+	// INITIALIZATION
+	
 	[MenuItem ("Window/Pixel Art Editor")]
 	public static void Init () {
 		// Get existing open window or if none, make new one
@@ -69,7 +73,10 @@ public class UPAEditorWindow : EditorWindow {
 		if (path.Length != 0)
 			CurrentImg = UPASession.OpenImageAtPath (path);
 	}
-
+	
+	
+	// Draw the Pixel Art Editor.
+	// This includes both toolbar and painting area.
 	// TODO: Add comments
 	void OnGUI () {
 		if (window == null)
