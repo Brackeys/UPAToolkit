@@ -186,7 +186,11 @@ public class UPAEditorWindow : EditorWindow {
 		if (tool == UPATool.BoxBrush)
 			GUI.backgroundColor = new Color (0.7f, 0.7f, 0.7f);
 		if (GUI.Button (new Rect (450, 4, 60, 30), "Box Fill")) {
-			tool = UPATool.BoxBrush;
+			EditorUtility.DisplayDialog(
+				"In Development",
+				"This feature is currently being developed.",
+				"Get it done please");
+			//tool = UPATool.BoxBrush;
 		}
 		GUI.backgroundColor = Color.white;
 		if (tool == UPATool.Eraser)
