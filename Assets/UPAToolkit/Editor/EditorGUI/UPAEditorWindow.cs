@@ -137,10 +137,16 @@ public class UPAEditorWindow : EditorWindow {
 			}
 		}
 		
+		if (e.type == EventType.scrollWheel && e.button == 0) {
+			gridSpacing -= e.delta.y;
+		}
+		
 		EditorGUI.DrawRect ( CurrentImg.FillRect(), gridBGColor);
 		
 		// DRAW IMAGE
-		updateRects = UPADrawer.DrawImage ( CurrentImg, window.position );
+		if ( UPADrawer.DrawImage ( CurrentImg, window.position ) ) {
+			updateRects = true;
+		}
 
 		// Draw toolbar bg
 		EditorGUI.DrawRect ( new Rect (0,0, window.position.width, 40), toolbarColor );
