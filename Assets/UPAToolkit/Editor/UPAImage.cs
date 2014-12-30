@@ -17,30 +17,39 @@ public struct Pixel {
 
 [System.Serializable]
 public class UPAImage : ScriptableObject {
-	// Helper getters (TODO: Store these inside the UPAImage to make settings stick to their projects.)
-	public float gridSpacing {
-		get { return UPAEditorWindow.gridSpacing + 1f; }
-	}
-	public float gridOffsetY {
-		get { return UPAEditorWindow.gridOffsetY; }
-	}
-	public float gridOffsetX {
-		get { return UPAEditorWindow.gridOffsetX; }
-	}
+
+	// HELPER GETTERS
 	public Rect window {
 		get { return UPAEditorWindow.window.position; }
 	}
-	
-	// Important data
+
+	// IMAGE DATA
+	[HideInInspector]
 	public int width;
+	[HideInInspector]
 	public int height;
+	[HideInInspector]
 	public Pixel[] map;
+
+	// VIEW & NAVIGATION SETTINGS
+	[HideInInspector]
+	[SerializeField]
+	private float _gridSpacing = 20f;
+	public float gridSpacing {
+		get { return _gridSpacing + 1f; }
+		set { _gridSpacing = Mathf.Clamp (value, 2f, 60f); }
+	}
+	[HideInInspector]
+	public float gridOffsetY = 0;
+	[HideInInspector]
+	public float gridOffsetX = 0;
 	
 	// Class constructor
 	public UPAImage () {
-		// nothing
+		// do nothing so far
 	}
-	
+
+	// This is not called in constructor to have more control
 	public void Init (int w, int h) {
 		width = w;
 		height = h;

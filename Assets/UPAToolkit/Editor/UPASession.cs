@@ -9,7 +9,7 @@ public class UPASession {
 
 	public static void CreateImage (int w, int h) {
 		string path = EditorUtility.SaveFilePanel ("Create UPAImage",
-		                                           "Assets/", "PixelImage.asset", "asset");
+		                                           "Assets/", "Pixel Image.asset", "asset");
 		if (path == "") {
 			return;
 		}
@@ -52,6 +52,12 @@ public class UPASession {
 	public static UPAImage OpenImageAtPath (string path) {
 		if (path.Length != 0) {
 			UPAImage img = AssetDatabase.LoadAssetAtPath(path, typeof(UPAImage)) as UPAImage;
+
+			if (img == null) {
+				EditorPrefs.SetString ("currentImgPath", "");
+				return null;
+			}
+
 			EditorPrefs.SetString ("currentImgPath", path);
 			return img;
 		}

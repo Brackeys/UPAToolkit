@@ -19,18 +19,23 @@ public class UPAEditorWindow : EditorWindow {
 	public static UPAEditorWindow window;	// The static instance of the window
 
 	public static UPAImage CurrentImg;		// The img currently being edited
-	
-	
-	// VIEW & NAVIGATION SETTINGS
-	[SerializeField]
-	private static float _gridSpacing = 20f;
-	public static float gridSpacing {
-		get { return _gridSpacing; }
-		set { _gridSpacing = Mathf.Clamp (value, 2f, 60f); }
+
+
+	// HELPFUL GETTERS AND SETTERS
+
+	private float gridSpacing {
+		get { return CurrentImg.gridSpacing; }
+		set { CurrentImg.gridSpacing = value; }
 	}
-	public static float gridOffsetY = 0;
-	public static float gridOffsetX = 0;
-	
+	private float gridOffsetX {
+		get { return CurrentImg.gridOffsetX; }
+		set { CurrentImg.gridOffsetX = value; }
+	}
+	private float gridOffsetY {
+		get { return CurrentImg.gridOffsetY; }
+		set { CurrentImg.gridOffsetY = value; }
+	}
+
 
 	// PAINTING & VISUAL SETTINGS
 
@@ -46,9 +51,11 @@ public class UPAEditorWindow : EditorWindow {
 	private static Color gridBGColor = Color.black;
 	
 	private static GUIStyle style = new GUIStyle();
-	
 
-	private static Rect lastPos = new Rect ();	//Used for checking if window has been resized
+
+	//Used for checking if window has been resized
+	private static Rect lastPos = new Rect ();
+
 
 	// Add Pixel Art Editor to the Window menu
 	[MenuItem ("Window/Pixel Art Editor")]
@@ -58,7 +65,7 @@ public class UPAEditorWindow : EditorWindow {
 		window.title = "Pixel Art Editor";
 
 		string path = EditorPrefs.GetString ("currentImgPath", "");
-		Debug.Log (path);
+
 		if (path.Length != 0)
 			CurrentImg = UPASession.OpenImageAtPath (path);
 	}
