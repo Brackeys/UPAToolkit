@@ -18,7 +18,13 @@ public enum UPATool {
 }
 
 // Used for selecting texture export type
-enum TextureType {
+public enum TextureType {
 	sprite = 0,
 	texture = 1,
+}
+
+// Used for selecting texture export exstension
+public enum TextureExtension {
+	PNG = 0,
+	JPG = 1,
 }

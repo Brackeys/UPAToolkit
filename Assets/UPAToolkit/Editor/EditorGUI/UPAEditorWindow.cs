@@ -45,7 +45,6 @@ public class UPAEditorWindow : EditorWindow {
 
 	// PRIVATE VISUAL SETTINGS
 
-	private static Color bgColor = new Color (0.9f, 0.9f, 0.9f, 1);
 	private static Color32 toolbarColor = new Color32 (50, 50, 50, 255);
 
 	private static string[] gridBGStrings = new string[] {"Black", "White"};
@@ -140,31 +139,8 @@ public class UPAEditorWindow : EditorWindow {
 		
 		EditorGUI.DrawRect ( CurrentImg.FillRect(), gridBGColor);
 		
-		for (int x = 0; x < CurrentImg.width; x++) {
-			for (int y = 0; y < CurrentImg.height; y++) {
-				if (CurrentImg.map[x + y * CurrentImg.width].rect.size == Vector2.zero) {
-					updateRects = true;
-					continue;
-				}
-
-				// Is the rect visible on screen?
-				if (!window.position.Contains (new Vector2 (CurrentImg.map[x + y * CurrentImg.width].rect.x, CurrentImg.map[x + y * CurrentImg.width].rect.y))
-				    && !window.position.Contains (new Vector2 (CurrentImg.map[x + y * CurrentImg.width].rect.x + CurrentImg.map[x + y * CurrentImg.width].rect.width,
-				                                           CurrentImg.map[x + y * CurrentImg.width].rect.y + CurrentImg.map[x + y * CurrentImg.width].rect.height)))
-				{
-					continue;
-				}
-				    
-				Color c = CurrentImg.map[x + y * CurrentImg.width].color;
-				float newR = c.a * c.r + (1 - c.a) * bgColor.r;
-				float newG = c.a * c.g + (1 - c.a) * bgColor.g;
-				float newB = c.a * c.b + (1 - c.a) * bgColor.b;
-
-				Color fC = new Color (newR, newG, newB, 1);
-				
-				EditorGUI.DrawRect (CurrentImg.map[x + y * CurrentImg.width].rect, fC);
-			}
-		}
+		// DRAW IMAGE
+		updateRects = UPADrawer.DrawImage ( CurrentImg, window.position );
 
 		// Draw toolbar bg
 		EditorGUI.DrawRect ( new Rect (0,0, window.position.width, 40), toolbarColor );
@@ -178,7 +154,7 @@ public class UPAEditorWindow : EditorWindow {
 				return;
 		}
 		if ( GUI.Button (new Rect (115, 4, 50, 30), "Export") ) {
-			UPAExportWindow.Init();
+			UPAExportWindow.Init(CurrentImg);
 		}
 
 		if (GUI.Button (new Rect (179, 6, 25, 25), "+")) {

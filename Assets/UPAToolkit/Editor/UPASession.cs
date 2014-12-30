@@ -4,6 +4,7 @@
 
 using UnityEngine;
 using UnityEditor;
+using System.IO;
 
 public class UPASession {
 
@@ -48,6 +49,20 @@ public class UPASession {
 		
 		return null;
 	}
+	
+	public static UPAImage OpenImageByAsset (UPAImage img) {
+
+		if (img == null) {
+			Debug.LogWarning ("Image is null. Returning null.");
+			EditorPrefs.SetString ("currentImgPath", "");
+			return null;
+		}
+
+		string path = AssetDatabase.GetAssetPath (img);
+		EditorPrefs.SetString ("currentImgPath", path);
+		
+		return img;
+	}
 
 	public static UPAImage OpenImageAtPath (string path) {
 		if (path.Length != 0) {
@@ -63,5 +78,58 @@ public class UPASession {
 		}
 		
 		return null;
+	}
+	
+	public static bool ExportImage (UPAImage img, TextureType type, TextureExtension extension) {
+		string path = EditorUtility.SaveFilePanel(
+			"Export image as " + extension.ToString(),
+			"Assets/",
+			img.name + "." + extension.ToString(),
+			extension.ToString());
+		
+		if (path.Length == 0)
+			return false;
+	
+		Texture2D tex = new Texture2D (img.width, img.height, TextureFormat.RGBA32, false);
+		
+		for (int x = 0; x < img.width; x++) {
+			for (int y = 0; y < img.height; y++) {
+				tex.SetPixel (x,y, img.map[x + y * img.width].color);
+			}
+		}
+
+		tex.Apply ();
+		
+		byte[] bytes;
+		if (extension == TextureExtension.PNG) {
+			// Encode texture into PNG
+			bytes = tex.EncodeToPNG();
+		} else {
+			// Encode texture into JPG
+			bytes = tex.EncodeToJPG();
+		}
+		
+		GameObject.DestroyImmediate (tex);
+		
+		path = FileUtil.GetProjectRelativePath(path);
+		
+		//Write to a file in the project folder
+		File.WriteAllBytes(path, bytes);
+		AssetDatabase.Refresh();
+		
+		TextureImporter texImp = AssetImporter.GetAtPath(path) as TextureImporter; 
+		
+		if (type == TextureType.texture)
+			texImp.textureType = TextureImporterType.Image;
+		else if (type == TextureType.sprite) {
+			texImp.textureType = TextureImporterType.Sprite;
+			texImp.spritePixelsPerUnit = 10;
+		}
+		
+		texImp.filterMode = FilterMode.Point;
+		
+		AssetDatabase.ImportAsset(path); 
+		
+		return true;
 	}
 }
