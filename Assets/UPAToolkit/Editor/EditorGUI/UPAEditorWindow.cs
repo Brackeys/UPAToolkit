@@ -126,8 +126,10 @@ public class UPAEditorWindow : EditorWindow {
 				updateRects = true;
 			}
 		}
-		
-		if (e.type == EventType.scrollWheel && e.button == 0) {
+
+		// TODO: Better way of doing this?
+		// Why does it behave so weirdly with my mac tablet.
+		if (e.type == EventType.scrollWheel) {
 			gridSpacing -= e.delta.y;
 		}
 		

@@ -7,4 +7,4 @@
 - Code cleanup & optimization (fuuuuun)
 
 ####Bug fixes
-- Fix Mac Scrolling
+- Fix image zooming on Mac
