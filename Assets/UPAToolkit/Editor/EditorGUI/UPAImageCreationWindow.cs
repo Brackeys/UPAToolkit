@@ -28,8 +28,8 @@ public class UPAImageCreationWindow : EditorWindow {
 		
 		GUILayout.Label ("UPA Image Settings", EditorStyles.boldLabel);
 
-		xRes = Mathf.Clamp (EditorGUILayout.IntField ("Width: ", xRes), 0, 128 );
-		yRes = Mathf.Clamp (EditorGUILayout.IntField ("Height: ", yRes), 0, 128 );
+		xRes = Mathf.Clamp (EditorGUILayout.IntField ("Width: ", xRes), 1, 128 );
+		yRes = Mathf.Clamp (EditorGUILayout.IntField ("Height: ", yRes), 1, 128 );
 		
 		EditorGUILayout.Space ();
 		

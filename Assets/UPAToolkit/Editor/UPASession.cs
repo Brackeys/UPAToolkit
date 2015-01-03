@@ -79,6 +79,22 @@ public class UPASession {
 		
 		return null;
 	}
+
+	public static Texture2D PreviewImage (UPAImage img) {
+		Texture2D tex = new Texture2D (img.width, img.height, TextureFormat.RGBA32, false);
+		
+		for (int x = 0; x < img.width; x++) {
+			for (int y = 0; y < img.height; y++) {
+				tex.SetPixel (x, img.height - y - 1, img.map[x + y * img.width].color);
+			}
+		}
+		
+		tex.Apply ();
+
+		tex.filterMode = FilterMode.Point;
+
+		return tex;
+	}
 	
 	public static bool ExportImage (UPAImage img, TextureType type, TextureExtension extension) {
 		string path = EditorUtility.SaveFilePanel(
@@ -94,7 +110,7 @@ public class UPASession {
 		
 		for (int x = 0; x < img.width; x++) {
 			for (int y = 0; y < img.height; y++) {
-				tex.SetPixel (x, img.height - y, img.map[x + y * img.width].color);
+				tex.SetPixel (x, img.height - y - 1, img.map[x + y * img.width].color);
 			}
 		}
 
