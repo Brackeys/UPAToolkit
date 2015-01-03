@@ -94,7 +94,7 @@ public class UPASession {
 		
 		for (int x = 0; x < img.width; x++) {
 			for (int y = 0; y < img.height; y++) {
-				tex.SetPixel (x,y, img.map[x + y * img.width].color);
+				tex.SetPixel (x, img.height - y, img.map[x + y * img.width].color);
 			}
 		}
 
