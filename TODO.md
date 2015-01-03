@@ -10,7 +10,6 @@
 - Multiple Layers (puh, big one)
 - Try direct image manipulation instead of displaying pixels using rects in Pixel Art Editor window. Might increase performance (probably will).
 	- Kill the 128x128 res limit. With fire.
-- Add shortcuts for selecting tools and opening window.
 - Add secondary color for easy switching
 - Add grab tool (alt + left click)
 

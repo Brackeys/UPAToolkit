@@ -51,7 +51,7 @@ public class UPAEditorWindow : EditorWindow {
 
 	// INITIALIZATION
 	
-	[MenuItem ("Window/Pixel Art Editor")]
+	[MenuItem ("Window/Pixel Art Editor %#p")]
 	public static void Init () {
 		// Get existing open window or if none, make new one
 		window = (UPAEditorWindow)EditorWindow.GetWindow (typeof (UPAEditorWindow));
@@ -115,15 +115,32 @@ public class UPAEditorWindow : EditorWindow {
 			if (e.keyCode == KeyCode.W) {
 				gridOffsetY += 20f;
 				updateRects = true;
-			} else if (e.keyCode == KeyCode.S) {
+			}
+			if (e.keyCode == KeyCode.S) {
 				gridOffsetY -= 20f;
 				updateRects = true;
-			} else if (e.keyCode == KeyCode.A) {
+			}
+			if (e.keyCode == KeyCode.A) {
 				gridOffsetX += 20f;
 				updateRects = true;
-			} else if (e.keyCode == KeyCode.D) {
+			}
+			if (e.keyCode == KeyCode.D) {
 				gridOffsetX -= 20f;
 				updateRects = true;
+			}
+
+			if (e.keyCode == KeyCode.B) {
+				tool = UPATool.PaintBrush;
+			}
+			if (e.keyCode == KeyCode.E) {
+				tool = UPATool.Eraser;
+			}
+
+			if (e.keyCode == KeyCode.UpArrow) {
+				gridSpacing *= 1.2f;
+			}
+			if (e.keyCode == KeyCode.DownArrow) {
+				gridSpacing *= 0.8f;
 			}
 		}
 
