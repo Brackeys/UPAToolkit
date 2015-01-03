@@ -22,6 +22,9 @@ public class UPAImageEditorPreview : Editor {
 		
 		if ( GUILayout.Button ("Open", GUILayout.Height (40)) ) {
 			UPAEditorWindow.CurrentImg = UPASession.OpenImageByAsset ( img );
+			if (UPAEditorWindow.window != null) {
+				UPAEditorWindow.window.Repaint();
+			}
 		}
 		
 		if ( GUILayout.Button ("Export", GUILayout.Height (40)) ) {

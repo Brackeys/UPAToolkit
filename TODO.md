@@ -6,7 +6,6 @@
 - Add image preview on asset select
 - Code cleanup & optimization (fuuuuun)
 - Import .png & .jpg images
-- Undo in Pixel Art Editor
 - Multiple Layers (puh, big one)
 - Try direct image manipulation instead of displaying pixels using rects in Pixel Art Editor window. Might increase performance (probably will).
 	- Kill the 128x128 res limit. With fire.

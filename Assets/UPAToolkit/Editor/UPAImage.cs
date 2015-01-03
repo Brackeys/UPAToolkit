@@ -99,6 +99,8 @@ public class UPAImage : ScriptableObject {
 
 	// Color a certain pixel by position in window
 	public void ColorPixel (Color color, Vector2 pos) {
+		Undo.RecordObject (this, "ColorPixel");
+
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
 				if (map[x + y * width].rect.Contains (pos)) {
