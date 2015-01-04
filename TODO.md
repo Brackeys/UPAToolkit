@@ -10,6 +10,7 @@
 	- Kill the 128x128 res limit. With fire.
 - Add secondary color for easy switching
 - Add grab tool (alt + left click)
+- Add icons instead of strings to toolbar
 
 ####Bug fixes
 - Fix image zooming on Mac

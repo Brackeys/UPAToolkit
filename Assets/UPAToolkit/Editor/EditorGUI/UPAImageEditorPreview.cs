@@ -38,6 +38,7 @@ public class UPAImageEditorPreview : Editor {
 		Texture2D preview = UPASession.PreviewImage (img);
 		float ratio = preview.width / preview.height;
 		EditorGUI.DrawTextureTransparent (new Rect (5, 150, Screen.width - 10, (Screen.width - 10) * ratio), preview, ScaleMode.ScaleToFit, 0);
+		DestroyImmediate (preview);
 		//UPADrawer.DrawImageInInspector ( img, new Rect (50,0, Screen.width, Screen.height) );
 	}
 }

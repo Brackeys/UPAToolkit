@@ -129,7 +129,7 @@ public class UPAEditorWindow : EditorWindow {
 				updateRects = true;
 			}
 
-			if (e.keyCode == KeyCode.B) {
+			if (e.keyCode == KeyCode.P) {
 				tool = UPATool.PaintBrush;
 			}
 			if (e.keyCode == KeyCode.E) {
