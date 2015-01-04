@@ -85,6 +85,7 @@ public class UPAEditorWindow : EditorWindow {
 			}
 			if ( GUI.Button (new Rect (window.position.width / 2f + 10, window.position.height /2f - 25, 130, 50), "Open Image") ) {
 				CurrentImg = UPASession.OpenImage ();
+				return;
 			}
 
 			return;
@@ -164,8 +165,10 @@ public class UPAEditorWindow : EditorWindow {
 		if (GUI.changed)
 			updateRects = true;
 
-		if (updateRects)
-			CurrentImg.UpdateRects();
+		if (updateRects) {
+			if (CurrentImg != null)
+				CurrentImg.UpdateRects();
+		}
 
 		e.Use();	// Release event handler
 	}
