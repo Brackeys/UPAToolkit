@@ -11,6 +11,8 @@
 - Add secondary color for easy switching
 - Add grab tool (alt + left click)
 - Add icons instead of strings to toolbar
+- Ctrl + left click to erase
+- Add shortcuts to manual
 
 ####Bug fixes
 - Fix image zooming on Mac
