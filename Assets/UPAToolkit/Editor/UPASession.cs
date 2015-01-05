@@ -139,7 +139,16 @@ public class UPASession {
 			texImp.textureType = TextureImporterType.Image;
 		else if (type == TextureType.sprite) {
 			texImp.textureType = TextureImporterType.Sprite;
+
+			#if UNITY_4_2
+			texImp.spritePixelsToUnits = 10;
+			#elif UNITY_4_3
+			texImp.spritePixelsToUnits = 10;
+			#elif UNITY_4_5
+			texImp.spritePixelsToUnits = 10;
+			#else
 			texImp.spritePixelsPerUnit = 10;
+			#endif
 		}
 		
 		texImp.filterMode = FilterMode.Point;
