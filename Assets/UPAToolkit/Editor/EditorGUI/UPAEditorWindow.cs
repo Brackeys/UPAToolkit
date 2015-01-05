@@ -45,8 +45,10 @@ public class UPAEditorWindow : EditorWindow {
 
 	// MISC TEMP VARIABLES
 
-	//Used for checking if window has been resized
+	// Used for checking if window has been resized
 	private static Rect lastPos = new Rect ();
+	// Stores the previous tool when temporarily switching
+	private static UPATool lastTool = UPATool.Empty;
 
 
 	// INITIALIZATION
@@ -99,8 +101,13 @@ public class UPAEditorWindow : EditorWindow {
 
 		EditorGUI.DrawRect (window.position, new Color32 (30,30,30,255));
 
+
+		#region Event handling
 		Event e = Event.current;	//Init event handler
+
+		// If key is pressed
 		if (e.button == 0) {
+			// Mouse buttons
 			if (e.isMouse && e.mousePosition.y > 40) {
 				if (tool == UPATool.Eraser)
 					CurrentImg.ColorPixel (Color.clear, e.mousePosition);
@@ -110,38 +117,52 @@ public class UPAEditorWindow : EditorWindow {
 					Debug.Log ("TODO: Add Box Brush tool.");
 				}
 			}
-		}
 
-		if (e.type == EventType.keyDown && e.button == 0) {
-			if (e.keyCode == KeyCode.W) {
-				gridOffsetY += 20f;
-				updateRects = true;
-			}
-			if (e.keyCode == KeyCode.S) {
-				gridOffsetY -= 20f;
-				updateRects = true;
-			}
-			if (e.keyCode == KeyCode.A) {
-				gridOffsetX += 20f;
-				updateRects = true;
-			}
-			if (e.keyCode == KeyCode.D) {
-				gridOffsetX -= 20f;
-				updateRects = true;
+			// Key down
+			if (e.type == EventType.keyDown) {
+				if (e.keyCode == KeyCode.W) {
+					gridOffsetY += 20f;
+					updateRects = true;
+				}
+				if (e.keyCode == KeyCode.S) {
+					gridOffsetY -= 20f;
+					updateRects = true;
+				}
+				if (e.keyCode == KeyCode.A) {
+					gridOffsetX += 20f;
+					updateRects = true;
+				}
+				if (e.keyCode == KeyCode.D) {
+					gridOffsetX -= 20f;
+					updateRects = true;
+				}
+				
+				if (e.keyCode == KeyCode.Alpha1) {
+					tool = UPATool.PaintBrush;
+				}
+				if (e.keyCode == KeyCode.Alpha2) {
+					tool = UPATool.Eraser;
+				}
+				
+				if (e.keyCode == KeyCode.UpArrow) {
+					gridSpacing *= 1.2f;
+				}
+				if (e.keyCode == KeyCode.DownArrow) {
+					gridSpacing *= 0.8f;
+				}
+			
 			}
 
-			if (e.keyCode == KeyCode.P) {
-				tool = UPATool.PaintBrush;
-			}
-			if (e.keyCode == KeyCode.E) {
-				tool = UPATool.Eraser;
-			}
-
-			if (e.keyCode == KeyCode.UpArrow) {
-				gridSpacing *= 1.2f;
-			}
-			if (e.keyCode == KeyCode.DownArrow) {
-				gridSpacing *= 0.8f;
+			if (e.control) {
+				if (lastTool == UPATool.Empty) {
+					lastTool = tool;
+					tool = UPATool.Eraser;
+				}
+			} else {
+				if (lastTool != UPATool.Empty) {
+					tool = lastTool;
+					lastTool = UPATool.Empty;
+				}
 			}
 		}
 
@@ -150,6 +171,7 @@ public class UPAEditorWindow : EditorWindow {
 		if (e.type == EventType.scrollWheel) {
 			gridSpacing -= e.delta.y;
 		}
+		#endregion
 		
 		EditorGUI.DrawRect ( CurrentImg.FillRect(), UPADrawer.gridBGColor);
 		

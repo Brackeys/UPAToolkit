@@ -105,7 +105,7 @@ public class UPADrawer : MonoBehaviour {
 		if ( GUI.Button (new Rect (115, 4, 50, 30), "Export") ) {
 			UPAExportWindow.Init(CurrentImg);
 		}
-		
+
 		if (GUI.Button (new Rect (179, 6, 25, 25), "+")) {
 			CurrentImg.gridSpacing *= 1.5f;
 			updateRects = true;
