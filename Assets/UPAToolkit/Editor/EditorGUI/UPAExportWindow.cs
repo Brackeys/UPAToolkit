@@ -33,8 +33,15 @@ public class UPAExportWindow : EditorWindow {
 		
 		GUILayout.Label ("Export Settings", EditorStyles.boldLabel);
 		texExtension = (TextureExtension)EditorGUILayout.EnumPopup("Save As:", texExtension);
-		if (texExtension == TextureExtension.JPG)
+		if (texExtension == TextureExtension.JPG) {
+			#if UNITY_4_2
+			GUILayout.Label ("Error: Export to JPG requires Unity 4.5+");
+			#elif UNITY_4_3
+			GUILayout.Label ("Error: Export to JPG requires Unity 4.5+");
+			#endif
+			
 			GUILayout.Label ("Warning: JPG files will lose transparency.");
+		}
 		texType = (TextureType)EditorGUILayout.EnumPopup("Texture Type:", texType);
 		
 		EditorGUILayout.Space ();

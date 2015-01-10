@@ -122,7 +122,16 @@ public class UPASession {
 			bytes = tex.EncodeToPNG();
 		} else {
 			// Encode texture into JPG
+			
+			#if UNITY_4_2
+			bytes = tex.EncodeToPNG();
+			#elif UNITY_4_3
+			bytes = tex.EncodeToPNG();
+			#elif UNITY_4_5
 			bytes = tex.EncodeToJPG();
+			#else
+			bytes = tex.EncodeToJPG();
+			#endif
 		}
 		
 		GameObject.DestroyImmediate (tex);
