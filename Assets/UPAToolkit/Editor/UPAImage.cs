@@ -24,9 +24,6 @@ public class UPAImage : ScriptableObject {
 	public int height;
 	[HideInInspector]
 	public Pixel[] map;
-
-	public int testx;
-	public int testy;
 	
 
 	// VIEW & NAVIGATION SETTINGS
