@@ -24,6 +24,9 @@ public class UPAImage : ScriptableObject {
 	public int height;
 	[HideInInspector]
 	public Pixel[] map;
+
+	public int testx;
+	public int testy;
 	
 
 	// VIEW & NAVIGATION SETTINGS
@@ -101,14 +104,35 @@ public class UPAImage : ScriptableObject {
 	public void ColorPixel (Color color, Vector2 pos) {
 		Undo.RecordObject (this, "ColorPixel");
 
-		for (int x = 0; x < width; x++) {
-			for (int y = 0; y < height; y++) {
-				if (map[x + y * width].rect.Contains (pos)) {
-					map [x + y * width].color = color;
-				}
-			}
+		int? position = GetPixelPosition (pos);
+
+		if (position != null){
+			map[(int)position].color = color;
 		}
-		
+
 		EditorUtility.SetDirty (this);
+	}
+
+	// returns color of pixel in position, returns null if position isn't in "Pixel[] map"
+	public Color? GetPixelColor(Vector2 pos){
+		int? position = GetPixelPosition (pos);
+
+		if (position != null){
+			EditorUtility.SetDirty (this);
+			return map[(int)position].color;
+		}
+
+		return null;
+	}
+
+	// Returns pixel position in "Pixel[] map" from real position or null when the result is not in the pixel map
+	public int? GetPixelPosition(Vector2 pos){
+		float x = (pos.x - gridOffsetX - (window.width / 2f) + (width * gridSpacing) / 2f) / gridSpacing;
+		float y = (pos.y - gridOffsetY - (window.height / 2f) + (height * gridSpacing) / 2f - 20) / gridSpacing;
+		
+		if (x >= 0 && x < width && y >= 0 && y < height)
+			return (int)x + (int)y * width;
+		
+		return null;
 	}
 }

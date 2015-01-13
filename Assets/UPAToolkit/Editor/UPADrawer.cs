@@ -136,6 +136,12 @@ public class UPADrawer : MonoBehaviour {
 			//tool = UPATool.BoxBrush;
 		}
 		GUI.backgroundColor = Color.white;
+		if (CurrentImg.tool == UPATool.ColorPicker)
+			GUI.backgroundColor = new Color (0.7f, 0.7f, 0.7f);
+		if (GUI.Button (new Rect (515, 4, 90, 30), "Color Picker")) {
+			CurrentImg.tool = UPATool.ColorPicker;
+		}
+		GUI.backgroundColor = Color.white;
 		if (CurrentImg.tool == UPATool.Eraser)
 			GUI.backgroundColor = new Color (0.7f, 0.7f, 0.7f);
 		if (GUI.Button (new Rect (385, 4, 60, 30), "Erase")) {
@@ -144,14 +150,14 @@ public class UPADrawer : MonoBehaviour {
 		GUI.backgroundColor = Color.white;
 		
 		style.normal.textColor = new Color (0.7f, 0.7f, 0.7f);
-		GUI.Label (new Rect (525, 11, 150, 30), "Use WASD to navigate.", style);
+		GUI.Label (new Rect (620, 11, 150, 30), "Use WASD to navigate.", style);
 		
-		if (GUI.Button (new Rect (670, 4, 80, 30), "Center View")) {
+		if (GUI.Button (new Rect (775, 4, 80, 30), "Center View")) {
 			CurrentImg.gridOffsetX = 0;
 			CurrentImg.gridOffsetY = 0;
 		}
 		
-		CurrentImg.gridBGIndex = GUI.Toolbar (new Rect (760, 4, 90, 30), CurrentImg.gridBGIndex, gridBGStrings);
+		CurrentImg.gridBGIndex = GUI.Toolbar (new Rect (865, 4, 90, 30), CurrentImg.gridBGIndex, gridBGStrings);
 		
 		if (CurrentImg.gridBGIndex == 0) {
 			gridBGColor = Color.black;
