@@ -10,8 +10,6 @@ public class UPADrawer : MonoBehaviour {
 
 
 	// VISUAL SETTINGS
-
-	private static Color bgColor = new Color (0.9f, 0.9f, 0.9f, 1);
 	
 	private static Color32 toolbarColor = new Color32 (50, 50, 50, 255);
 	
@@ -23,73 +21,25 @@ public class UPADrawer : MonoBehaviour {
 
 	// DRAWING METHODS
 
-	// Draw an image inside a window
-	// Return true if image rects need to be updated.
-	public static bool DrawImage (UPAImage img, Rect window) {
-		bool updateRects = false;
-
-		for (int x = 0; x < img.width; x++) {
-			for (int y = 0; y < img.height; y++) {
-			
-				if (img.map[x + y * img.width].rect.size == Vector2.zero) {
-					updateRects = true;
-					continue;
-				}
-				
-				// Is the rect visible on screen?
-				if (!window.Contains (new Vector2 (img.map[x + y * img.width].rect.x, img.map[x + y * img.width].rect.y))
-				    && !window.Contains (new Vector2 (img.map[x + y * img.width].rect.x + img.map[x + y * img.width].rect.width,
-				                                           img.map[x + y * img.width].rect.y + img.map[x + y * img.width].rect.height)))
-				{
-					continue;
-				}
-				
-				Color c = img.map[x + y * img.width].color;
-				float newR = c.a * c.r + (1 - c.a) * bgColor.r;
-				float newG = c.a * c.g + (1 - c.a) * bgColor.g;
-				float newB = c.a * c.b + (1 - c.a) * bgColor.b;
-				
-				Color fC = new Color (newR, newG, newB, 1);
-				
-				EditorGUI.DrawRect (img.map[x + y * img.width].rect, fC);
-			}
-		}
-		
-		return updateRects;
-	}
+	// Draw an image inside the editor window
+	public static void DrawImage (UPAImage img) {
+		Rect texPos = img.GetImgRect();
+		EditorGUI.DrawTextureTransparent (texPos, img.tex);
 	
-	// Draw an image inside inspector
-	// TODO: Get this working.
-	public static void DrawImageInInspector (UPAImage img, Rect window) {
-		
-		for (int x = 0; x < img.width; x++) {
-			for (int y = 0; y < img.height; y++) {
-				
-				// Is the rect visible on screen?
-				if (!window.Contains (new Vector2 (img.map[x + y * img.width].rect.x, img.map[x + y * img.width].rect.y))
-				    && !window.Contains (new Vector2 (img.map[x + y * img.width].rect.x + img.map[x + y * img.width].rect.width,
-				                                  img.map[x + y * img.width].rect.y + img.map[x + y * img.width].rect.height)))
-				{
-					continue;
-				}
-				
-				Color c = img.map[x + y * img.width].color;
-				float newR = c.a * c.r + (1 - c.a) * bgColor.r;
-				float newG = c.a * c.g + (1 - c.a) * bgColor.g;
-				float newB = c.a * c.b + (1 - c.a) * bgColor.b;
-				
-				Color fC = new Color (newR, newG, newB, 1);
-				
-				EditorGUI.DrawRect (img.map[x + y * img.width].rect, fC);
-			}
+		// Draw a grid above the image (y axis first)
+		for (int x = 0; x <= img.width; x += 1) {
+			float posX = texPos.xMin + ( (float)texPos.width / (float)img.width ) * x - 0.2f;
+			EditorGUI.DrawRect (new Rect (posX, texPos.yMin, 1, texPos.height), gridBGColor);
 		}
-		
+		// Then x axis
+		for (int y = 0; y <= img.height; y += 1) {
+			float posY = texPos.yMin + ( (float)texPos.height / (float)img.height ) * y - 0.2f;
+			EditorGUI.DrawRect (new Rect (texPos.xMin, posY, texPos.width, 1), gridBGColor);
+		}
 	}
 
 	// Draw the settings toolbar
-	// Return true if image rects need to be updated.
-	public static bool DrawToolbar (Rect window) {
-		bool updateRects = false;
+	public static void DrawToolbar (Rect window) {
 
 		// Draw toolbar bg
 		EditorGUI.DrawRect ( new Rect (0,0, window.width, 40), toolbarColor );
@@ -100,19 +50,18 @@ public class UPADrawer : MonoBehaviour {
 		if ( GUI.Button (new Rect (60, 4, 50, 30), "Open") ) {
 			CurrentImg = UPASession.OpenImage ();
 			if (CurrentImg == null)
-				return false;
+				return;
 		}
 		if ( GUI.Button (new Rect (115, 4, 50, 30), "Export") ) {
 			UPAExportWindow.Init(CurrentImg);
 		}
 
 		if (GUI.Button (new Rect (179, 6, 25, 25), "+")) {
-			CurrentImg.gridSpacing *= 1.5f;
-			updateRects = true;
+			CurrentImg.gridSpacing *= 1.2f;
 		}
 		if (GUI.Button (new Rect (209, 6, 25, 25), "-")) {
-			CurrentImg.gridSpacing *= 0.5f;
-			updateRects = true;
+			CurrentImg.gridSpacing *= 0.8f;
+			CurrentImg.gridSpacing -= 2;
 		}
 		
 		CurrentImg.selectedColor = EditorGUI.ColorField (new Rect (250, 7, 70, 25), CurrentImg.selectedColor);
@@ -158,8 +107,6 @@ public class UPADrawer : MonoBehaviour {
 		} else {
 			gridBGColor = Color.white;
 		}
-
-		return updateRects;
 	}
 	
 }

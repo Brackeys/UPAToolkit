@@ -32,6 +32,8 @@ public class UPASession {
 			UPAEditorWindow.window.Repaint();
 		else
 			UPAEditorWindow.Init();
+
+		img.gridSpacing = 10 - Mathf.Abs (img.width - img.height)/100f;
 	}
 
 	public static UPAImage OpenImage () {
@@ -80,22 +82,6 @@ public class UPASession {
 		return null;
 	}
 
-	public static Texture2D PreviewImage (UPAImage img) {
-		Texture2D tex = new Texture2D (img.width, img.height, TextureFormat.RGBA32, false);
-		
-		for (int x = 0; x < img.width; x++) {
-			for (int y = 0; y < img.height; y++) {
-				tex.SetPixel (x, img.height - y - 1, img.map[x + y * img.width].color);
-			}
-		}
-		
-		tex.Apply ();
-
-		tex.filterMode = FilterMode.Point;
-
-		return tex;
-	}
-	
 	public static bool ExportImage (UPAImage img, TextureType type, TextureExtension extension) {
 		string path = EditorUtility.SaveFilePanel(
 			"Export image as " + extension.ToString(),
@@ -105,36 +91,24 @@ public class UPASession {
 		
 		if (path.Length == 0)
 			return false;
-	
-		Texture2D tex = new Texture2D (img.width, img.height, TextureFormat.RGBA32, false);
-		
-		for (int x = 0; x < img.width; x++) {
-			for (int y = 0; y < img.height; y++) {
-				tex.SetPixel (x, img.height - y - 1, img.map[x + y * img.width].color);
-			}
-		}
-
-		tex.Apply ();
 		
 		byte[] bytes;
 		if (extension == TextureExtension.PNG) {
 			// Encode texture into PNG
-			bytes = tex.EncodeToPNG();
+			bytes = img.tex.EncodeToPNG();
 		} else {
 			// Encode texture into JPG
 			
 			#if UNITY_4_2
-			bytes = tex.EncodeToPNG();
+			bytes = img.tex.EncodeToPNG();
 			#elif UNITY_4_3
-			bytes = tex.EncodeToPNG();
+			bytes = img.tex.EncodeToPNG();
 			#elif UNITY_4_5
-			bytes = tex.EncodeToJPG();
+			bytes = img.tex.EncodeToJPG();
 			#else
-			bytes = tex.EncodeToJPG();
+			bytes = img.tex.EncodeToJPG();
 			#endif
 		}
-		
-		GameObject.DestroyImmediate (tex);
 		
 		path = FileUtil.GetProjectRelativePath(path);
 		
