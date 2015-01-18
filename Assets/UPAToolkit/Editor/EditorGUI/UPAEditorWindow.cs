@@ -109,8 +109,13 @@ public class UPAEditorWindow : EditorWindow {
 					CurrentImg.ColorPixel (Color.clear, e.mousePosition);
 				else if (tool == UPATool.PaintBrush)
 					CurrentImg.ColorPixel (selectedColor, e.mousePosition);
-				else if (tool == UPATool.BoxBrush) {
+				else if (tool == UPATool.BoxBrush)
 					Debug.Log ("TODO: Add Box Brush tool.");
+				else if (tool == UPATool.ColorPicker){
+					Color? newColor = CurrentImg.GetPixelColor(e.mousePosition);
+					if (newColor != null && newColor != Color.clear){
+						selectedColor = (Color)newColor;
+					}
 				}
 			}
 
@@ -134,6 +139,9 @@ public class UPAEditorWindow : EditorWindow {
 				}
 				if (e.keyCode == KeyCode.Alpha2) {
 					tool = UPATool.Eraser;
+				}
+				if (e.keyCode == KeyCode.Alpha4) {
+					tool = UPATool.ColorPicker;
 				}
 				
 				if (e.keyCode == KeyCode.UpArrow) {
