@@ -44,9 +44,7 @@ public class UPAEditorWindow : EditorWindow {
 
 
 	// MISC TEMP VARIABLES
-
-	// Used for checking if window has been resized
-	private static Rect lastPos = new Rect ();
+	
 	// Stores the previous tool when temporarily switching
 	private static UPATool lastTool = UPATool.Empty;
 
@@ -73,7 +71,7 @@ public class UPAEditorWindow : EditorWindow {
 		if (window == null)
 			Init ();
 
-		if (CurrentImg == null || CurrentImg.map == null) { 
+		if (CurrentImg == null || CurrentImg.layers.Count == 0) { 
 
 			string curImgPath = EditorPrefs.GetString ("currentImgPath", "");
 
@@ -92,12 +90,6 @@ public class UPAEditorWindow : EditorWindow {
 
 			return;
 		}
-
-		bool updateRects = false;
-
-		if (window.position != lastPos)
-			updateRects = true;
-		lastPos = window.position;
 
 		EditorGUI.DrawRect (window.position, new Color32 (30,30,30,255));
 
@@ -122,19 +114,15 @@ public class UPAEditorWindow : EditorWindow {
 			if (e.type == EventType.keyDown) {
 				if (e.keyCode == KeyCode.W) {
 					gridOffsetY += 20f;
-					updateRects = true;
 				}
 				if (e.keyCode == KeyCode.S) {
 					gridOffsetY -= 20f;
-					updateRects = true;
 				}
 				if (e.keyCode == KeyCode.A) {
 					gridOffsetX += 20f;
-					updateRects = true;
 				}
 				if (e.keyCode == KeyCode.D) {
 					gridOffsetX -= 20f;
-					updateRects = true;
 				}
 				
 				if (e.keyCode == KeyCode.Alpha1) {
@@ -172,25 +160,13 @@ public class UPAEditorWindow : EditorWindow {
 			gridSpacing -= e.delta.y;
 		}
 		#endregion
-		
-		EditorGUI.DrawRect ( CurrentImg.FillRect(), UPADrawer.gridBGColor);
+
+        EditorGUI.DrawPreviewTexture(CurrentImg.FillRect(), CurrentImg.backgroundImage);
 		
 		// DRAW IMAGE
-		if ( UPADrawer.DrawImage ( CurrentImg, window.position ) ) {
-			updateRects = true;
-		}
+        UPADrawer.DrawImage(CurrentImg, window.position);
 
-		if ( UPADrawer.DrawToolbar (window.position) ) {
-			updateRects = true;
-		}
-
-		if (GUI.changed)
-			updateRects = true;
-
-		if (updateRects) {
-			if (CurrentImg != null)
-				CurrentImg.UpdateRects();
-		}
+		UPADrawer.DrawToolbar (window.position);
 
 		e.Use();	// Release event handler
 	}
