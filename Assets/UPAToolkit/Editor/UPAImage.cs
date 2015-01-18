@@ -95,6 +95,23 @@ public class UPAImage : ScriptableObject {
 		EditorUtility.SetDirty (this);
 	}
 
+	// Return a certain pixel by position in window
+	public Color GetPixelColor (Vector2 pos) {
+		Rect texPos = GetImgRect();
+		
+		if (!texPos.Contains (pos)) {
+			return Color.clear;
+		}
+		
+		float relX = (pos.x - texPos.x) / texPos.width;
+		float relY = (texPos.y - pos.y) / texPos.height;
+		
+		int pixelX = (int)( tex.width * relX );
+		int pixelY = (int)( tex.height * relY ) - 1;
+		
+		return tex.GetPixel (pixelX, pixelY);
+	}
+
 	// Get the rect of the image as displayed in the editor
 	public Rect GetImgRect () {
 		float ratio = (float)height / (float)width;

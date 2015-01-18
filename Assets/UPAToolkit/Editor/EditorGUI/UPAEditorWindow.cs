@@ -140,7 +140,7 @@ public class UPAEditorWindow : EditorWindow {
 				if (e.keyCode == KeyCode.Alpha2) {
 					tool = UPATool.Eraser;
 				}
-				if (e.keyCode == KeyCode.Alpha4) {
+				if (e.keyCode == KeyCode.P) {
 					tool = UPATool.ColorPicker;
 				}
 				

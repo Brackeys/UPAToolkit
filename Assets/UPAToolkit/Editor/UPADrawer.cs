@@ -93,6 +93,8 @@ public class UPADrawer : MonoBehaviour {
 		GUI.backgroundColor = Color.white;
 		
 		style.normal.textColor = new Color (0.7f, 0.7f, 0.7f);
+		style.fontSize = 12;
+		style.fontStyle = FontStyle.Normal;
 		GUI.Label (new Rect (525, 11, 150, 30), "Use WASD to navigate.", style);
 		
 		if (GUI.Button (new Rect (670, 4, 80, 30), "Center View")) {
@@ -106,6 +108,12 @@ public class UPADrawer : MonoBehaviour {
 			gridBGColor = Color.black;
 		} else {
 			gridBGColor = Color.white;
+		}
+
+		if (CurrentImg.tool == UPATool.ColorPicker) {
+			style.fontStyle = FontStyle.Bold;
+			style.fontSize = 15;
+			GUI.Label (new Rect (window.width/2f - 140, 60, 100, 30), "Click on a pixel to choose a color.", style);
 		}
 	}
 	

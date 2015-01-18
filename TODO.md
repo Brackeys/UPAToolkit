@@ -12,6 +12,7 @@
 - Add move tool
 - Add ability to turn off grid
 - Generate grid as image instead of drawing rects
+- Update readme to include color picker shortcut
 
 ####Bug fixes
 - Fix image zooming on Mac
