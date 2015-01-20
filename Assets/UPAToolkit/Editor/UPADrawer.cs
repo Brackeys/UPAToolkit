@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEditor;
+using System;
 
 public class UPADrawer : MonoBehaviour {
 	
@@ -25,96 +26,90 @@ public class UPADrawer : MonoBehaviour {
 	public static void DrawImage (UPAImage img) {
 		Rect texPos = img.GetImgRect();
 		EditorGUI.DrawTextureTransparent (texPos, img.tex);
-	
-		// Draw a grid above the image (y axis first)
-		for (int x = 0; x <= img.width; x += 1) {
-			float posX = texPos.xMin + ( (float)texPos.width / (float)img.width ) * x - 0.2f;
-			EditorGUI.DrawRect (new Rect (posX, texPos.yMin, 1, texPos.height), gridBGColor);
-		}
-		// Then x axis
-		for (int y = 0; y <= img.height; y += 1) {
-			float posY = texPos.yMin + ( (float)texPos.height / (float)img.height ) * y - 0.2f;
-			EditorGUI.DrawRect (new Rect (texPos.xMin, posY, texPos.width, 1), gridBGColor);
-		}
+
+        if (CurrentImg.gridlines) {
+            // Draw a grid above the image (y axis first)
+            for (int x = 0; x <= img.width; x += 1) {
+                float posX = texPos.xMin + ((float)texPos.width / (float)img.width) * x - 0.2f;
+                EditorGUI.DrawRect(new Rect(posX, texPos.yMin, 1, texPos.height), gridBGColor);
+            }
+            // Then x axis
+            for (int y = 0; y <= img.height; y += 1) {
+                float posY = texPos.yMin + ((float)texPos.height / (float)img.height) * y - 0.2f;
+                EditorGUI.DrawRect(new Rect(texPos.xMin, posY, texPos.width, 1), gridBGColor);
+            }
+        }
+        
 	}
 
 	// Draw the settings toolbar
 	public static void DrawToolbar (Rect window) {
+        // Begin the horizontal layout for the toolbar and utilise the built-in unity toolbar style
+        GUILayout.BeginHorizontal(EditorStyles.toolbar);
 
-		// Draw toolbar bg
-		EditorGUI.DrawRect ( new Rect (0,0, window.width, 40), toolbarColor );
-		
-		if ( GUI.Button (new Rect (5, 4, 50, 30), "New") ) {
-			UPAImageCreationWindow.Init ();
-		}
-		if ( GUI.Button (new Rect (60, 4, 50, 30), "Open") ) {
-			CurrentImg = UPASession.OpenImage ();
-			if (CurrentImg == null)
-				return;
-		}
-		if ( GUI.Button (new Rect (115, 4, 50, 30), "Export") ) {
-			UPAExportWindow.Init(CurrentImg);
-		}
+        // New Button
+        if (GUILayout.Button(new GUIContent("New", "Create a new pixel art image asset."), EditorStyles.toolbarButton)) {
+            UPAImageCreationWindow.Init();
+        }
 
-		if (GUI.Button (new Rect (179, 6, 25, 25), "+")) {
-			CurrentImg.gridSpacing *= 1.2f;
-		}
-		if (GUI.Button (new Rect (209, 6, 25, 25), "-")) {
-			CurrentImg.gridSpacing *= 0.8f;
-			CurrentImg.gridSpacing -= 2;
-		}
-		
-		CurrentImg.selectedColor = EditorGUI.ColorField (new Rect (250, 7, 70, 25), CurrentImg.selectedColor);
-		EditorGUI.DrawRect ( new Rect (303, 7, 20, 25), toolbarColor );
-		//bgColor = EditorGUI.ColorField (new Rect (400, 4, 70, 25), bgColor);
-		
-		GUI.backgroundColor = Color.white;
-		if (CurrentImg.tool == UPATool.PaintBrush)
-			GUI.backgroundColor = new Color (0.7f, 0.7f, 0.7f);
-		if (GUI.Button (new Rect (320, 4, 60, 30), "Paint")) {
-			CurrentImg.tool = UPATool.PaintBrush;
-		}
-		GUI.backgroundColor = Color.white;
-		if (CurrentImg.tool == UPATool.BoxBrush)
-			GUI.backgroundColor = new Color (0.7f, 0.7f, 0.7f);
-		if (GUI.Button (new Rect (450, 4, 60, 30), "Box Fill")) {
-			EditorUtility.DisplayDialog(
-				"In Development",
-				"This feature is currently being developed.",
-				"Get it done please");
-			//tool = UPATool.BoxBrush;
-		}
-		GUI.backgroundColor = Color.white;
-		if (CurrentImg.tool == UPATool.Eraser)
-			GUI.backgroundColor = new Color (0.7f, 0.7f, 0.7f);
-		if (GUI.Button (new Rect (385, 4, 60, 30), "Erase")) {
-			CurrentImg.tool = UPATool.Eraser;
-		}
-		GUI.backgroundColor = Color.white;
-		
-		style.normal.textColor = new Color (0.7f, 0.7f, 0.7f);
-		style.fontSize = 12;
-		style.fontStyle = FontStyle.Normal;
-		GUI.Label (new Rect (525, 11, 150, 30), "Use WASD to navigate.", style);
-		
-		if (GUI.Button (new Rect (670, 4, 80, 30), "Center View")) {
-			CurrentImg.gridOffsetX = 0;
-			CurrentImg.gridOffsetY = 0;
-		}
-		
-		CurrentImg.gridBGIndex = GUI.Toolbar (new Rect (760, 4, 90, 30), CurrentImg.gridBGIndex, gridBGStrings);
-		
-		if (CurrentImg.gridBGIndex == 0) {
-			gridBGColor = Color.black;
-		} else {
-			gridBGColor = Color.white;
-		}
+        // Open Button
+        if (GUILayout.Button(new GUIContent("Open", "Open an existing pixel art image asset."), EditorStyles.toolbarButton)) {
+            CurrentImg = UPASession.OpenImage();
+            if (CurrentImg == null)
+                return;
+        }
 
-		if (CurrentImg.tool == UPATool.ColorPicker) {
-			style.fontStyle = FontStyle.Bold;
-			style.fontSize = 15;
-			GUI.Label (new Rect (window.width/2f - 140, 60, 100, 30), "Click on a pixel to choose a color.", style);
-		}
+        // Export Button
+        if (GUILayout.Button(new GUIContent("Export", "Export a pixel art image to a sprite or texture."), EditorStyles.toolbarButton)) {
+            UPAExportWindow.Init(CurrentImg);
+        }
+
+        GUILayout.Space(5);
+
+        // Zoom Slider
+        CurrentImg.gridSpacing = GUILayout.HorizontalSlider(CurrentImg.gridSpacing, 1, 140, GUILayout.MinWidth(80));
+
+        GUILayout.Space(5);
+
+        // Colour Selector with built in Colour Picker widget
+        CurrentImg.selectedColor = EditorGUILayout.ColorField(CurrentImg.selectedColor, GUILayout.MaxWidth(80));
+
+        // Tool Dropdown/Popup
+        // The button pulls its label from the UPATool enum for whichever tool is selected
+        if (GUILayout.Button(new GUIContent(System.Enum.GetName(typeof(UPATool), CurrentImg.tool), "Select a drawing tool to use."), EditorStyles.toolbarPopup, GUILayout.MinWidth(80))) {
+            // Create and Populate the tool menu
+            GenericMenu toolMenu = new GenericMenu();           
+            foreach (UPATool tool in System.Enum.GetValues(typeof(UPATool))) {
+                UPATool t = tool; // Copy By Value instead of using 'tool' which is By Reference
+                if (t != UPATool.Empty) { // Show all tools except UPATool.Empty
+                    // Add the menu item
+                    // The label is the Enum name based on the iteration through the array
+                    toolMenu.AddItem(new GUIContent(System.Enum.GetName(typeof(UPATool), t)), false, () => { CurrentImg.tool = t; });
+                }
+            }
+             
+            // Show the tool menu
+            toolMenu.DropDown(new Rect(298, 16, 0, 0));
+        }
+
+        // Gridline Toggle button
+        CurrentImg.gridlines = GUILayout.Toggle(CurrentImg.gridlines, new GUIContent("Gridlines", "Show/Hide Gridlines."), EditorStyles.toolbarButton);
+
+        // Gridline Colour Selector because why not?
+        gridBGColor = EditorGUILayout.ColorField(gridBGColor, GUILayout.MaxWidth(80));
+
+        // Center image button
+        if (GUILayout.Button(new GUIContent("Center", "Center the image in the window."), EditorStyles.toolbarButton)) {
+            CurrentImg.gridOffsetX = 0;
+            CurrentImg.gridOffsetY = 0;
+        }
+        // Navigation instructions label
+        EditorGUILayout.LabelField("Use WASD to navigate.");
+
+        // Use up the rest of the horizontal space
+        GUILayout.FlexibleSpace();
+
+        // End the toolbar layout
+        GUILayout.EndHorizontal();
 	}
-	
 }

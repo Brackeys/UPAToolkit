@@ -56,6 +56,7 @@ public class UPAEditorWindow : EditorWindow {
 		// Get existing open window or if none, make new one
 		window = (UPAEditorWindow)EditorWindow.GetWindow (typeof (UPAEditorWindow));
 		window.title = "Pixel Art Editor";
+        window.wantsMouseMove = false;
 
 		string path = EditorPrefs.GetString ("currentImgPath", "");
 
@@ -95,90 +96,97 @@ public class UPAEditorWindow : EditorWindow {
 			CurrentImg.LoadTexFromMap();
 		}
 
-		EditorGUI.DrawRect (window.position, new Color32 (30,30,30,255));
 
+        // the DrawRect left and top of the Rect are taken relative to the window 
+        // while the window.position.left and window.position.top are relative to the screen
+        // 49,49,49 is the colour of the Sprite Editor background
+        EditorGUI.DrawRect(new Rect(0, 0, window.position.width, window.position.height), new Color32(49, 49, 49, 255));
 
-		#region Event handling
-		Event e = Event.current;	//Init event handler
+        // DRAW IMAGE
+        UPADrawer.DrawImage(CurrentImg);
+        // Draw Toolbar
+        UPADrawer.DrawToolbar(window.position);
 
-		// If key is pressed
-		if (e.button == 0) {
-			// Mouse buttons
-			if (e.isMouse && e.mousePosition.y > 40) {
-				if (tool == UPATool.Eraser)
-					CurrentImg.ColorPixel (Color.clear, e.mousePosition);
-				else if (tool == UPATool.PaintBrush)
-					CurrentImg.ColorPixel (selectedColor, e.mousePosition);
-				else if (tool == UPATool.BoxBrush)
-					Debug.Log ("TODO: Add Box Brush tool.");
-				else if (tool == UPATool.ColorPicker){
-					Color? newColor = CurrentImg.GetPixelColor(e.mousePosition);
-					if (newColor != null && newColor != Color.clear){
-						selectedColor = (Color)newColor;
-					}
-				}
-			}
-
-			// Key down
-			if (e.type == EventType.keyDown) {
-				if (e.keyCode == KeyCode.W) {
-					gridOffsetY += 20f;
-				}
-				if (e.keyCode == KeyCode.S) {
-					gridOffsetY -= 20f;
-				}
-				if (e.keyCode == KeyCode.A) {
-					gridOffsetX += 20f;
-				}
-				if (e.keyCode == KeyCode.D) {
-					gridOffsetX -= 20f;
-				}
-				
-				if (e.keyCode == KeyCode.Alpha1) {
-					tool = UPATool.PaintBrush;
-				}
-				if (e.keyCode == KeyCode.Alpha2) {
-					tool = UPATool.Eraser;
-				}
-				if (e.keyCode == KeyCode.P) {
-					tool = UPATool.ColorPicker;
-				}
-				
-				if (e.keyCode == KeyCode.UpArrow) {
-					gridSpacing *= 1.2f;
-				}
-				if (e.keyCode == KeyCode.DownArrow) {
-					gridSpacing *= 0.8f;
-					gridSpacing -= 2;
-				}
-			
-			}
-
-			if (e.control) {
-				if (lastTool == UPATool.Empty) {
-					lastTool = tool;
-					tool = UPATool.Eraser;
-				}
-			} else {
-				if (lastTool != UPATool.Empty) {
-					tool = lastTool;
-					lastTool = UPATool.Empty;
-				}
-			}
-		}
-
-		// TODO: Better way of doing this?
-		// Why does it behave so weirdly with my mac tablet.
-		if (e.type == EventType.scrollWheel) {
-			gridSpacing -= e.delta.y;
-		}
-		#endregion
-		
-		// DRAW IMAGE
-		UPADrawer.DrawImage ( CurrentImg );
-
-		UPADrawer.DrawToolbar (window.position);
-
-		e.Use();	// Release event handler
+        eventHandling();
 	}
+
+    void eventHandling() {
+        #region Event handling
+        Event e = Event.current;	//Init event handler
+
+        // MouseDown/MouseDrag
+        if (e.type == EventType.MouseDown || e.type == EventType.MouseDrag) {
+            if (tool == UPATool.PaintBrush) {
+                CurrentImg.ColorPixel(selectedColor, e.mousePosition);
+            } else if (tool == UPATool.Eraser) {
+                CurrentImg.ColorPixel(Color.clear, e.mousePosition);
+            } else if (tool == UPATool.BoxBrush) {
+                Debug.Log("TODO: Add Box Brush tool.");
+            } else if (tool == UPATool.ColorPicker) { // I left this in though it may not really be needed since the colour field provides access to unity's built-in colour picker already.
+                Color? newColor = CurrentImg.GetPixelColor(e.mousePosition);
+                if (newColor != null && newColor != Color.clear) {
+                    selectedColor = (Color)newColor;
+                }
+            }
+        }
+
+        // KeyDown
+        if (e.type == EventType.KeyDown) {
+            if (e.keyCode == KeyCode.W) {
+                gridOffsetY += 20f;
+            }
+            if (e.keyCode == KeyCode.S) {
+                gridOffsetY -= 20f;
+            }
+            if (e.keyCode == KeyCode.A) {
+                gridOffsetX += 20f;
+            }
+            if (e.keyCode == KeyCode.D) {
+                gridOffsetX -= 20f;
+            }
+
+            if (e.keyCode == KeyCode.Alpha1) {
+                tool = UPATool.PaintBrush;
+            }
+            if (e.keyCode == KeyCode.Alpha2) {
+                tool = UPATool.Eraser;
+            }
+            if (e.keyCode == KeyCode.P) {
+                tool = UPATool.ColorPicker;
+            }
+
+            if (e.keyCode == KeyCode.UpArrow) {
+                gridSpacing *= 1.2f;
+            }
+            if (e.keyCode == KeyCode.DownArrow) {
+                gridSpacing *= 0.8f;
+                gridSpacing -= 2;
+            }
+
+        }
+
+        if (e.control) {
+            if (lastTool == UPATool.Empty) {
+                lastTool = tool;
+                tool = UPATool.Eraser;
+            }
+        } else {
+            if (lastTool != UPATool.Empty) {
+                tool = lastTool;
+                lastTool = UPATool.Empty;
+            }
+        }
+
+        // TODO: Better way of doing this?
+        // Why does it behave so weirdly with my mac tablet.
+        // reply: That might be because of the old getter for gridSpacing which actually returned (_gridSpacing + 1)
+        // when (gridSpacing -= e.delta.y) expands to (gridSpacing = gridSpacing - e.delta.y) the getter increments the value being returned 
+        if (e.type == EventType.scrollWheel) {
+            gridSpacing -= e.delta.y;
+        }
+
+        // Repaint seems to work for redrawing the screen on demand since e.Use() was preventing other default unity commands from working.
+        Repaint();
+        #endregion
+    }
 }

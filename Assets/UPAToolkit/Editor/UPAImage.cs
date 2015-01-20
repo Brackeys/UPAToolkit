@@ -30,12 +30,15 @@ public class UPAImage : ScriptableObject {
 	[SerializeField]
 	private float _gridSpacing = 20f;
 	public float gridSpacing {
-		get { return _gridSpacing + 1f; }
-		set { _gridSpacing = Mathf.Clamp (value, 0, 140f); }
+		get { return _gridSpacing; }    // I do not think returning (gridSpacing + 1) is a good idea here.
+		set { _gridSpacing = Mathf.Clamp (value, 1f, 140f); }
 	}
 
 	public float gridOffsetY = 0;
 	public float gridOffsetX = 0;
+
+    // flag for whether to draw gridlines or not
+    public bool gridlines = true;
 	
 	
 	// PAINTING SETTINGS
