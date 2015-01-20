@@ -16,6 +16,7 @@ public enum UPATool {
 	Eraser,
 	BoxBrush, // TODO: Add BoxBrush
 	Empty, // Used as null
+	ColorPicker,
 }
 
 // Used for selecting texture export type

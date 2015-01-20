@@ -44,9 +44,8 @@ public class UPAEditorWindow : EditorWindow {
 
 
 	// MISC TEMP VARIABLES
-
 	// Used for checking if window has been resized
-	private static Rect lastPos = new Rect ();
+	
 	// Stores the previous tool when temporarily switching
 	private static UPATool lastTool = UPATool.Empty;
 
