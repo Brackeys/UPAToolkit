@@ -24,7 +24,11 @@ public class UPADrawer : MonoBehaviour {
 	// Draw an image inside the editor window
 	public static void DrawImage (UPAImage img) {
 		Rect texPos = img.GetImgRect();
-		EditorGUI.DrawTextureTransparent (texPos, img.tex);
+        // Draw image
+        foreach (UPALayer layer in img.layers)
+        {
+            EditorGUI.DrawTextureTransparent(texPos, layer.image);
+        }
 	
 		// Draw a grid above the image (y axis first)
 		for (int x = 0; x <= img.width; x += 1) {

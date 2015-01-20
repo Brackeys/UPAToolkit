@@ -1,0 +1,39 @@
+﻿Merge branch 'master' of https://github.com/Xenira/UPAToolkit
+
+Conflicts:
+	Assets/Pixel Image.asset
+#
+# It looks like you may be committing a merge.
+# If this is not correct, please remove the file
+#	.git/MERGE_HEAD
+# and try again.
+
+
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+# On branch master
+# Your branch and 'origin/master' have diverged,
+# and have 1 and 8 different commits each, respectively.
+#   (use "git pull" to merge the remote branch into yours)
+#
+# All conflicts fixed but you are still merging.
+#
+# Changes to be committed:
+#	modified:   Assets/Pixel Image.asset
+#	modified:   Assets/UPAToolkit/Editor/EditorGUI/UPAEditorWindow.cs
+#	modified:   Assets/UPAToolkit/Editor/EditorGUI/UPAImageCreationWindow.cs
+#	modified:   Assets/UPAToolkit/Editor/EditorGUI/UPAImageEditorPreview.cs
+#	modified:   Assets/UPAToolkit/Editor/UPACustomTypes.cs
+#	modified:   Assets/UPAToolkit/Editor/UPADrawer.cs
+#	modified:   Assets/UPAToolkit/Editor/UPAImage.cs
+#	modified:   Assets/UPAToolkit/Editor/UPASession.cs
+#	modified:   TODO.md
+#
+# Changes not staged for commit:
+#	deleted:    Assets/TestScene.unity
+#	deleted:    Assets/TestScene.unity.meta
+#
+# Untracked files:
+#	New Layer 0.png
+#
+
