@@ -8,15 +8,7 @@ using UnityEditor;
 
 [CustomEditor(typeof(UPAImage)), CanEditMultipleObjects]
 public class UPAImageEditorPreview : Editor {
-	
-	//Property declaration
-	public SerializedProperty map;
-	
-	//Editing the properties
-	void OnEnable () {
-		map = serializedObject.FindProperty ("map");
-	}
-	
+
 	public override void OnInspectorGUI () {
 		UPAImage img = (UPAImage)target;
 
@@ -35,10 +27,12 @@ public class UPAImageEditorPreview : Editor {
 
 		GUILayout.EndArea();
 
-		Texture2D preview = UPASession.PreviewImage (img);
-		float ratio = preview.width / preview.height;
-		EditorGUI.DrawTextureTransparent (new Rect (5, 150, Screen.width - 10, (Screen.width - 10) * ratio), preview, ScaleMode.ScaleToFit, 0);
-		DestroyImmediate (preview);
-		//UPADrawer.DrawImageInInspector ( img, new Rect (50,0, Screen.width, Screen.height) );
+		float ratio = (float)img.width / (float)img.height;
+		if (img.tex == null) {
+			img.LoadTexFromMap();
+			return;
+		}
+		EditorGUI.DrawTextureTransparent (new Rect (5, 150, Screen.width - 10, (Screen.width - 10) * ratio), img.tex, ScaleMode.ScaleToFit, 0);
+
 	}
 }
