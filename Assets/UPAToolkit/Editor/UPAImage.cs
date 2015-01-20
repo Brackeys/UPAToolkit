@@ -96,18 +96,23 @@ public class UPAImage : ScriptableObject {
         return new Vector2(xPos, yPos);
     }
 
-    // Calculate the full extend of all the pixels laid out
-    public Rect FillRect()
+    // Get the rect of the image as displayed in the editor
+    public Rect GetImgRect()
     {
-        return new Rect((window.width / 2f) - (width * gridSpacing) / 2f - 1 + gridOffsetX,
-                         (window.height / 2f) - (height * gridSpacing) / 2f - 1 + gridOffsetY + 20,
-                            width * gridSpacing + 1,
-                            height * gridSpacing + 1);
+        float ratio = (float)height / (float)width;
+        float w = gridSpacing * 30;
+        float h = ratio * gridSpacing * 30;
+
+        float xPos = window.width / 2f - w / 2f + gridOffsetX;
+        float yPos = window.height / 2f - h / 2f + 20 + gridOffsetY;
+
+        return new Rect(xPos, yPos, w, h);
     }
+
     // Color a certain pixel by position in window
     public void ColorPixel(Color color, Vector2 pos)
     {
-        if (FillRect().Contains(pos))
+        if (GetImgRect().Contains(pos))
         {
             Undo.RecordObject(this, "ColorPixel");
             float cx = ((pos.x - gridOffsetX) + (width * gridSpacing) / 2f - (window.width / 2f)) / gridSpacing;
@@ -149,8 +154,7 @@ public class UPAImage : ScriptableObject {
             nr++;
         }
 
-        Exception e = new ArgumentOutOfRangeException("Layer Count", "There are more than 100 layers with default name");
-        throw e;
+        return "overflow";
     }
 
     /// <summary>
@@ -176,5 +180,23 @@ public class UPAImage : ScriptableObject {
         texture.Apply();
 
         return texture;
+    }
+
+    // Return a certain pixel by position in window
+    internal Color GetPixelColor(Vector2 pos)
+    {
+        Rect texPos = GetImgRect();
+
+        if (!texPos.Contains(pos))
+        {
+            return Color.clear;
+        }
+
+        pos = CalculateImagePixel(pos.x, pos.y);
+
+        // Question: Should the color picker pick the color from all layers or just the active layer?
+        // I think all layers makes more sense (and no difference atm). If we add the ability to toggle layers youll be able to get just one layer
+        // by simply toggling the others off.
+        return CalculateCombinedImage().GetPixel((int)pos.x, (int)pos.y);
     }
 }

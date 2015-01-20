@@ -32,15 +32,8 @@ public class UPALayer : ScriptableObject
 
     public void init(int w, int h)
     {
-        try
-        {
-            name = UPAEditorWindow.CurrentImg.GetDefaultLayerName();
-        }
-        catch
-        {
-            EditorUtility.DisplayDialog("Are U Even Renaming?", "Please consider renaming your layers.", "Yes, Sir I will!");
-            name = "42";
-        }
+        name = UPAEditorWindow.CurrentImg.GetDefaultLayerName();
+
 
         image = new Texture2D(w, h);
         image.filterMode = FilterMode.Point;
