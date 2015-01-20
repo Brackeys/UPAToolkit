@@ -8,6 +8,36 @@ using System.IO;
 
 public class UPASession {
 
+    /// <summary>
+    /// Save layer image
+    /// </summary>
+    /// <param name="layer">Layer to save</param>
+	public static void SaveLayer(UPALayer layer) {
+        string path = EditorPrefs.GetString("currentLayerPath") + "/" + layer.name + ".png";
+
+		byte[] bytes = layer.image.EncodeToPNG();
+		
+		//Write to a file in the project folder
+        File.WriteAllBytes(path, bytes);
+	}
+
+    /// <summary>
+    /// Load image from layer file
+    /// </summary>
+    /// <param name="name">Layer Name</param>
+    /// <returns>Layer Texture</returns>
+    internal static Texture2D LoadLayerImage(string name)
+    {
+        string path = EditorPrefs.GetString("currentLayerPath") + "/" + name + ".png";
+
+        byte[] bytes = File.ReadAllBytes(path);
+
+        Texture2D texture = new Texture2D(1, 1);
+        texture.LoadImage(bytes);
+        texture.filterMode = FilterMode.Point;
+        return texture;
+    }
+
 	public static void CreateImage (int w, int h) {
 		string path = EditorUtility.SaveFilePanel ("Create UPAImage",
 		                                           "Assets/", "Pixel Image.asset", "asset");
@@ -16,6 +46,9 @@ public class UPASession {
 		}
 		
 		path = FileUtil.GetProjectRelativePath(path);
+
+		string layerPath = (path.Substring (0, path.Length - Path.GetExtension (path).Length) + " Layers").Replace(" ", "_");
+		Directory.CreateDirectory (layerPath);
 		
 		UPAImage img = ScriptableObject.CreateInstance<UPAImage>();
 		AssetDatabase.CreateAsset (img, path);
@@ -25,7 +58,8 @@ public class UPASession {
 		img.Init(w, h);
 		EditorUtility.SetDirty(img);
 		UPAEditorWindow.CurrentImg = img;
-		
+
+		EditorPrefs.SetString ("currentLayerPath", layerPath);
 		EditorPrefs.SetString ("currentImgPath", AssetDatabase.GetAssetPath (img));
 		
 		if (UPAEditorWindow.window != null)
@@ -45,7 +79,23 @@ public class UPASession {
 		if (path.Length != 0) {
 			path = FileUtil.GetProjectRelativePath(path);
 			UPAImage img = AssetDatabase.LoadAssetAtPath(path, typeof(UPAImage)) as UPAImage;
+
+            string layerPath = (path.Substring(0, path.Length - Path.GetExtension(path).Length) + " Layers").Replace(" ", "_");
+            EditorPrefs.SetString("currentLayerPath", layerPath);
 			EditorPrefs.SetString ("currentImgPath", path);
+
+            // Load Layers
+            foreach (Object obj in AssetDatabase.LoadAllAssetsAtPath(path))
+            {
+                if (obj is UPALayer)
+                {
+                    UPALayer layer = (UPALayer) obj;
+                    layer.LoadImage();
+                    img.layers.Add(layer);
+                }
+            }
+
+            
 			return img;
 		}
 		
@@ -56,13 +106,27 @@ public class UPASession {
 
 		if (img == null) {
 			Debug.LogWarning ("Image is null. Returning null.");
+            EditorPrefs.SetString("currentLayerPath", "");
 			EditorPrefs.SetString ("currentImgPath", "");
 			return null;
 		}
 
 		string path = AssetDatabase.GetAssetPath (img);
+        string layerPath = (path.Substring(0, path.Length - Path.GetExtension(path).Length) + " Layers").Replace(" ", "_");
+        EditorPrefs.SetString("currentLayerPath", layerPath);
 		EditorPrefs.SetString ("currentImgPath", path);
-		
+
+        // Load Layers
+        foreach (Object obj in AssetDatabase.LoadAllAssetsAtPath(path))
+        {
+            if (obj is UPALayer)
+            {
+                UPALayer layer = (UPALayer)obj;
+                layer.LoadImage();
+                img.layers.Add(layer);
+            }
+        }
+
 		return img;
 	}
 
@@ -71,11 +135,26 @@ public class UPASession {
 			UPAImage img = AssetDatabase.LoadAssetAtPath(path, typeof(UPAImage)) as UPAImage;
 
 			if (img == null) {
+                EditorPrefs.SetString("currentLayerPath", "");
 				EditorPrefs.SetString ("currentImgPath", "");
 				return null;
 			}
 
+            string layerPath = (path.Substring(0, path.Length - Path.GetExtension(path).Length) + " Layers").Replace(" ", "_");
+            EditorPrefs.SetString("currentLayerPath", layerPath);
 			EditorPrefs.SetString ("currentImgPath", path);
+
+            // Load Layers
+            foreach (Object obj in AssetDatabase.LoadAllAssetsAtPath(path))
+            {
+                if (obj is UPALayer)
+                {
+                    UPALayer layer = (UPALayer)obj;
+                    layer.LoadImage();
+                    img.layers.Add(layer);
+                }
+            }
+
 			return img;
 		}
 		
@@ -95,18 +174,18 @@ public class UPASession {
 		byte[] bytes;
 		if (extension == TextureExtension.PNG) {
 			// Encode texture into PNG
-			bytes = img.tex.EncodeToPNG();
+            bytes = img.CalculateCombinedImage().EncodeToPNG();
 		} else {
 			// Encode texture into JPG
 			
 			#if UNITY_4_2
-			bytes = img.tex.EncodeToPNG();
+			bytes = img.CalculateCombinedImage().EncodeToPNG();
 			#elif UNITY_4_3
-			bytes = img.tex.EncodeToPNG();
+			bytes = img.CalculateCombinedImage().EncodeToPNG();
 			#elif UNITY_4_5
-			bytes = img.tex.EncodeToJPG();
+			bytes = img.CalculateCombinedImage().EncodeToJPG();
 			#else
-			bytes = img.tex.EncodeToJPG();
+            bytes = img.CalculateCombinedImage().EncodeToJPG();
 			#endif
 		}
 		

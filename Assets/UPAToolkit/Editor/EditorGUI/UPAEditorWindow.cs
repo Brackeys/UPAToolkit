@@ -71,7 +71,7 @@ public class UPAEditorWindow : EditorWindow {
 		if (window == null)
 			Init ();
 
-		if (CurrentImg == null) { 
+		if (CurrentImg == null || CurrentImg.layers.Count == 0) { 
 
 			string curImgPath = EditorPrefs.GetString ("currentImgPath", "");
 
@@ -89,10 +89,6 @@ public class UPAEditorWindow : EditorWindow {
 			}
 
 			return;
-		}
-
-		if (CurrentImg.tex == null) {
-			CurrentImg.LoadTexFromMap();
 		}
 
 		EditorGUI.DrawRect (window.position, new Color32 (30,30,30,255));
