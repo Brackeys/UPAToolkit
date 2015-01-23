@@ -18,6 +18,8 @@ public class UPADrawer : MonoBehaviour {
 	
 	private static GUIStyle style = new GUIStyle();
 
+	private static Vector2 mousePixelPos = Vector2.zero;
+
 
 	// DRAWING METHODS
 
@@ -39,7 +41,7 @@ public class UPADrawer : MonoBehaviour {
 	}
 
 	// Draw the settings toolbar
-	public static void DrawToolbar (Rect window) {
+	public static void DrawToolbar (Rect window, Vector2 mousePos) {
 
 		// Draw toolbar bg
 		EditorGUI.DrawRect ( new Rect (0,0, window.width, 40), toolbarColor );
@@ -115,6 +117,10 @@ public class UPADrawer : MonoBehaviour {
 			style.fontSize = 15;
 			GUI.Label (new Rect (window.width/2f - 140, 60, 100, 30), "Click on a pixel to choose a color.", style);
 		}
+
+
+		mousePixelPos = CurrentImg.GetMousePixelPos(mousePos);
+		GUI.Label (new Rect (860, 11, 100, 30), "(" + (int)mousePixelPos.x + "," + ((int)mousePixelPos.y+1)*-1 + ")", style);
 	}
 	
 }
