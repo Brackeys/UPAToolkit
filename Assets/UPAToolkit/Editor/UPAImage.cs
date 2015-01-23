@@ -81,16 +81,12 @@ public class UPAImage : ScriptableObject {
 
 		Undo.RecordObject (tex, "ColorPixel");
 
-		float relX = (pos.x - texPos.x) / texPos.width;
-		float relY = (texPos.y - pos.y) / texPos.height;
+		Vector2 pixelPos = GetMousePixelPos(pos);
 
-		int pixelX = (int)( tex.width * relX );
-		int pixelY = (int)( tex.height * relY ) - 1;
-
-		tex.SetPixel (pixelX, pixelY, color);
+		tex.SetPixel ((int)pixelPos.x, (int)pixelPos.y, color);
 		tex.Apply();
 
-		map [pixelX + pixelY * - 1 * width - height] = color;
+		map [(int)pixelPos.x + (int)pixelPos.y * - 1 * width - height] = color;
 		
 		EditorUtility.SetDirty (this);
 	}
@@ -102,14 +98,10 @@ public class UPAImage : ScriptableObject {
 		if (!texPos.Contains (pos)) {
 			return Color.clear;
 		}
+
+		Vector2 pixelPos = GetMousePixelPos(pos);
 		
-		float relX = (pos.x - texPos.x) / texPos.width;
-		float relY = (texPos.y - pos.y) / texPos.height;
-		
-		int pixelX = (int)( tex.width * relX );
-		int pixelY = (int)( tex.height * relY ) - 1;
-		
-		return tex.GetPixel (pixelX, pixelY);
+		return tex.GetPixel ((int)pixelPos.x, (int)pixelPos.y);
 	}
 
 	// Get the rect of the image as displayed in the editor
@@ -131,5 +123,21 @@ public class UPAImage : ScriptableObject {
 		
 		tex.filterMode = FilterMode.Point;
 		tex.Apply();
+	}
+
+	public Vector2 GetMousePixelPos(Vector2 pos) {
+		Rect texPos = GetImgRect();
+		
+		if (!texPos.Contains (pos)) {
+			new Vector2(-1f,-1f);
+		}
+
+		float relX = (pos.x - texPos.x) / texPos.width;
+		float relY = (texPos.y - pos.y) / texPos.height;
+		
+		int pixelX = (int)( tex.width * relX );
+		int pixelY = (int)( tex.height * relY ) - 1;
+
+		return new Vector2(pixelX, pixelY);
 	}
 }

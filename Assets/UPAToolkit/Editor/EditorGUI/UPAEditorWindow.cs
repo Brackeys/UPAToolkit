@@ -97,9 +97,11 @@ public class UPAEditorWindow : EditorWindow {
 
 		EditorGUI.DrawRect (window.position, new Color32 (30,30,30,255));
 
-
 		#region Event handling
 		Event e = Event.current;	//Init event handler
+
+		// used for UPADrawer
+		Vector2 mousePos = e.mousePosition;
 
 		// If key is pressed
 		if (e.button == 0) {
@@ -177,7 +179,8 @@ public class UPAEditorWindow : EditorWindow {
 		// DRAW IMAGE
 		UPADrawer.DrawImage ( CurrentImg );
 
-		UPADrawer.DrawToolbar (window.position);
+		UPADrawer.DrawToolbar (window.position, mousePos);
+		
 
 		e.Use();	// Release event handler
 	}
