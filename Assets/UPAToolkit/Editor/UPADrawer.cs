@@ -18,13 +18,35 @@ public class UPADrawer : MonoBehaviour {
 	
 	private static GUIStyle style = new GUIStyle();
 
+	private static Texture2D removeLayerIcon;
+
+
+	// GETTER METHODS
+	public static Rect GetLayerPanelRect (Rect window) {
+		return new Rect (12, window.height - CurrentImg.layers.Count * 36 - 30, 85, CurrentImg.layers.Count * 36 + 25);
+	}
+
 
 	// DRAWING METHODS
 
 	// Draw an image inside the editor window
 	public static void DrawImage (UPAImage img) {
 		Rect texPos = img.GetImgRect();
-		EditorGUI.DrawTextureTransparent (texPos, img.tex);
+
+		Texture2D bg = new Texture2D (1,1);
+		bg.SetPixel (0,0, Color.clear);
+		bg.Apply();
+		EditorGUI.DrawTextureTransparent (texPos, bg);
+		DestroyImmediate (bg);
+
+		// Draw image
+		for (int i = 0; i < img.layers.Count; i++)
+		{
+			if (!img.layers[i].enabled)
+				continue;
+
+			GUI.DrawTexture (texPos, img.layers[i].tex);
+		}
 	
 		// Draw a grid above the image (y axis first)
 		for (int x = 0; x <= img.width; x += 1) {
@@ -39,7 +61,7 @@ public class UPADrawer : MonoBehaviour {
 	}
 
 	// Draw the settings toolbar
-	public static void DrawToolbar (Rect window) {
+	public static void DrawToolbar (Rect window, Vector2 mousePos) {
 
 		// Draw toolbar bg
 		EditorGUI.DrawRect ( new Rect (0,0, window.width, 40), toolbarColor );
@@ -115,6 +137,57 @@ public class UPADrawer : MonoBehaviour {
 			style.fontSize = 15;
 			GUI.Label (new Rect (window.width/2f - 140, 60, 100, 30), "Click on a pixel to choose a color.", style);
 		}
+
+		Vector2 pixelCoordinate = CurrentImg.GetPixelCoordinate (mousePos);
+		GUI.Label (new Rect (860, 11, 100, 30), "(" + (int)pixelCoordinate.x + "," + (int)pixelCoordinate.y + ")", style);
+	}
+
+	public static void DrawLayerPanel (Rect window) {
+		style.imagePosition = ImagePosition.ImageAbove;
+
+		for (int i = 0; i < CurrentImg.layers.Count; i++) {
+			GUI.backgroundColor = Color.white;
+			if (i == CurrentImg.selectedLayer) {
+				GUI.backgroundColor = new Color (0.7f, 0.7f, 0.7f);
+			}
+
+			UPALayer tempLayer = CurrentImg.layers[i];
+			if (GUI.Button (new Rect (12, window.height - 40 - i * 36, 65, 33), "")) {
+				CurrentImg.selectedLayer = i;
+			}
+			GUI.backgroundColor = Color.white;
+			GUI.Label (new Rect (15, window.height - 32 - i * 36, 90, 30), tempLayer.name);
+
+			bool layerEnabled = tempLayer.enabled;
+			tempLayer.enabled = GUI.Toggle (new Rect (80, window.height - 41 - i * 36, 15, 15), tempLayer.enabled, "");
+			if (tempLayer.enabled != layerEnabled)
+				tempLayer.parentImg.dirty = true;
+
+			if (removeLayerIcon == null)
+				removeLayerIcon = (Texture2D)Resources.Load ("UI/CrossWhite");
+
+			if (GUI.Button (new Rect (80, window.height - 23 - i * 36, 15, 15), removeLayerIcon,style)) {
+				if (CurrentImg.layers.Count > 1) {
+					bool delete = EditorUtility.DisplayDialog(
+						"Delete Layer",
+						"Do you want to remove " + CurrentImg.layers[i].name + "?",
+						"Delete",
+						"Cancel");
+
+					if (delete) {
+						CurrentImg.RemoveLayerAt(i);
+						continue;
+					}
+				}
+			}
+
+			CurrentImg.layers[i] = tempLayer;
+		}
+
+		if (GUI.Button (new Rect (12, window.height - 32 - CurrentImg.layers.Count * 36, 85, 25), "New Layer")) {
+			CurrentImg.AddLayer ();
+		}
+		//CurrentImg.selectedLayer = GUI.Toolbar (new Rect (4, window.height - 200, 90, 30), CurrentImg.selectedLayer, layerNames);
 	}
 	
 }

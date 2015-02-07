@@ -91,9 +91,8 @@ public class UPAEditorWindow : EditorWindow {
 			return;
 		}
 
-		if (CurrentImg.tex == null) {
-			CurrentImg.LoadTexFromMap();
-		}
+		// Init the textures correctly, won't cost performance if nothing to load
+		CurrentImg.LoadAllTexsFromMaps();
 
 		EditorGUI.DrawRect (window.position, new Color32 (30,30,30,255));
 
@@ -101,21 +100,29 @@ public class UPAEditorWindow : EditorWindow {
 		#region Event handling
 		Event e = Event.current;	//Init event handler
 
+		//Capture mouse position
+		Vector2 mousePos = e.mousePosition;
+
 		// If key is pressed
 		if (e.button == 0) {
 			// Mouse buttons
-			if (e.isMouse && e.mousePosition.y > 40) {
-				if (tool == UPATool.Eraser)
-					CurrentImg.ColorPixel (Color.clear, e.mousePosition);
-				else if (tool == UPATool.PaintBrush)
-					CurrentImg.ColorPixel (selectedColor, e.mousePosition);
-				else if (tool == UPATool.BoxBrush)
-					Debug.Log ("TODO: Add Box Brush tool.");
-				else if (tool == UPATool.ColorPicker){
-					Color? newColor = CurrentImg.GetPixelColor(e.mousePosition);
-					if (newColor != null && newColor != Color.clear){
-						selectedColor = (Color)newColor;
+			if (e.isMouse && mousePos.y > 40) {
+				if (!UPADrawer.GetLayerPanelRect (window.position).Contains (mousePos)) {
+
+					if (tool == UPATool.Eraser)
+						CurrentImg.SetPixelByPos (Color.clear, mousePos, CurrentImg.selectedLayer);
+					else if (tool == UPATool.PaintBrush)
+						CurrentImg.SetPixelByPos (selectedColor, mousePos, CurrentImg.selectedLayer);
+					else if (tool == UPATool.BoxBrush)
+						Debug.Log ("TODO: Add Box Brush tool.");
+					else if (tool == UPATool.ColorPicker){
+						Vector2 pCoord = CurrentImg.GetPixelCoordinate (mousePos);
+						Color? newColor = CurrentImg.GetBlendedPixel( (int)pCoord.x, (int)pCoord.y );
+						if (newColor != null && newColor != Color.clear){
+							selectedColor = (Color)newColor;
+						}
 					}
+
 				}
 			}
 
@@ -177,7 +184,9 @@ public class UPAEditorWindow : EditorWindow {
 		// DRAW IMAGE
 		UPADrawer.DrawImage ( CurrentImg );
 
-		UPADrawer.DrawToolbar (window.position);
+		UPADrawer.DrawToolbar (window.position, mousePos);
+
+		UPADrawer.DrawLayerPanel ( window.position );
 
 		e.Use();	// Release event handler
 	}

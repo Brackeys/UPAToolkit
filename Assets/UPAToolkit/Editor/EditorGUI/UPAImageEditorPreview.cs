@@ -8,7 +8,6 @@ using UnityEditor;
 
 [CustomEditor(typeof(UPAImage)), CanEditMultipleObjects]
 public class UPAImageEditorPreview : Editor {
-
 	public override void OnInspectorGUI () {
 		UPAImage img = (UPAImage)target;
 
@@ -27,12 +26,10 @@ public class UPAImageEditorPreview : Editor {
 
 		GUILayout.EndArea();
 
-		float ratio = (float)img.width / (float)img.height;
-		if (img.tex == null) {
-			img.LoadTexFromMap();
-			return;
-		}
-		EditorGUI.DrawTextureTransparent (new Rect (5, 150, Screen.width - 10, (Screen.width - 10) * ratio), img.tex, ScaleMode.ScaleToFit, 0);
+		//Make sure the textures are loaded
+		img.LoadAllTexsFromMaps();
 
+		float ratio = (float)img.width / (float)img.height;
+		EditorGUI.DrawTextureTransparent (new Rect (5, 150, Screen.width - 10, (Screen.width - 10) * ratio), img.GetFinalImage(true), ScaleMode.ScaleToFit, 0);
 	}
 }

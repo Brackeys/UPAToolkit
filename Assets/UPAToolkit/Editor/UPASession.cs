@@ -86,8 +86,8 @@ public class UPASession {
 		string path = EditorUtility.SaveFilePanel(
 			"Export image as " + extension.ToString(),
 			"Assets/",
-			img.name + "." + extension.ToString(),
-			extension.ToString());
+			img.name + "." + extension.ToString().ToLower(),
+			extension.ToString().ToLower());
 		
 		if (path.Length == 0)
 			return false;
@@ -95,18 +95,18 @@ public class UPASession {
 		byte[] bytes;
 		if (extension == TextureExtension.PNG) {
 			// Encode texture into PNG
-			bytes = img.tex.EncodeToPNG();
+			bytes = img.GetFinalImage(true).EncodeToPNG();
 		} else {
 			// Encode texture into JPG
 			
 			#if UNITY_4_2
-			bytes = img.tex.EncodeToPNG();
+			bytes = img.GetFinalImage(true).EncodeToPNG();
 			#elif UNITY_4_3
-			bytes = img.tex.EncodeToPNG();
+			bytes = img.GetFinalImage(true).EncodeToPNG();
 			#elif UNITY_4_5
-			bytes = img.tex.EncodeToJPG();
+			bytes = img.GetFinalImage(true).EncodeToJPG();
 			#else
-			bytes = img.tex.EncodeToJPG();
+			bytes = img.GetFinalImage(true).EncodeToJPG();
 			#endif
 		}
 		
