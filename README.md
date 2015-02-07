@@ -9,8 +9,8 @@ UPA Toolkit is written solely in C#.
 This project is open for contributions. See [this guide](https://guides.github.com/activities/contributing-to-open-source/) on contributing to projects on GitHub. Also check out TODO.md for inspiration on future improvements and bug fixes.
 
 ###Download
-Coming soon to the Unity Asset Store!
-Until then the newest release can be found in the /Builds/ folder.
+Download from the Unity Asset Store [here](http://u3d.as/aZ3).
+The newest release can be found in the /Builds/ folder.
 
 ###Software Requirements
 This project is fully compatible with [Unity](http://unity3d.com) Free.
