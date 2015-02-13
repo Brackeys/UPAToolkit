@@ -23,7 +23,7 @@ public class UPADrawer : MonoBehaviour {
 
 	// GETTER METHODS
 	public static Rect GetLayerPanelRect (Rect window) {
-		return new Rect (12, window.height - CurrentImg.layers.Count * 36 - 30, 85, CurrentImg.layers.Count * 36 + 25);
+		return new Rect (12, window.height - CurrentImg.layers.Count * 36 - 30, 119, CurrentImg.layers.Count * 36 + 25);
 	}
 
 
@@ -143,7 +143,11 @@ public class UPADrawer : MonoBehaviour {
 	}
 
 	public static void DrawLayerPanel (Rect window) {
+		
 		style.imagePosition = ImagePosition.ImageAbove;
+		
+		int from = 0;
+		int to = 0;
 
 		for (int i = 0; i < CurrentImg.layers.Count; i++) {
 			GUI.backgroundColor = Color.white;
@@ -180,13 +184,32 @@ public class UPADrawer : MonoBehaviour {
 					}
 				}
 			}
+			
+			if (i + 1 < CurrentImg.layers.Count) {
+				if (GUI.Button (new Rect (97, window.height - 40  - i * 36, 22, 16), "+")) {
+					from = i;
+					to = i + 1;
+				}
+			}
+			
+			if (i > 0) {
+				if (GUI.Button (new Rect (97, window.height - 24 - i * 36, 22, 16), "-")) {
+					from = i;
+					to = i - 1;
+				}
+			}
 
 			CurrentImg.layers[i] = tempLayer;
+		}
+
+		if (from != 0 || to != 0) {
+			CurrentImg.ChangeLayerPosition (from, to);
 		}
 
 		if (GUI.Button (new Rect (12, window.height - 32 - CurrentImg.layers.Count * 36, 85, 25), "New Layer")) {
 			CurrentImg.AddLayer ();
 		}
+		
 		//CurrentImg.selectedLayer = GUI.Toolbar (new Rect (4, window.height - 200, 90, 30), CurrentImg.selectedLayer, layerNames);
 	}
 	

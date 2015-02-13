@@ -99,8 +99,6 @@ public class UPAImage : ScriptableObject {
 	}
 
 	public Color GetBlendedPixel (int x, int y) {
-		SortLayersByOrder ();
-
 		Color color = Color.clear;
 
 		for (int i = 0; i < layers.Count; i++) {
@@ -124,9 +122,16 @@ public class UPAImage : ScriptableObject {
 
 		return color;
 	}
-
-	public void SortLayersByOrder () {
-		layers = layers.OrderBy(layer => layer.order).ToList();
+	
+	public void ChangeLayerPosition (int from, int to) {
+		if (from >= layers.Count || to >= layers.Count || from < 0 || to < 0) {
+			Debug.LogError ("Cannot ChangeLayerPosition, out of range.");
+			return;
+		}
+		
+		UPALayer layer = layers[from];
+		layers.RemoveAt(from);
+		layers.Insert(to, layer);
 	}
 
 	// Get the rect of the image as displayed in the editor

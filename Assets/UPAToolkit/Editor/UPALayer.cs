@@ -4,7 +4,6 @@ using UnityEditor;
 [System.Serializable]
 public class UPALayer {
 	public string name;
-	public int order;
 	public Color[] map;
 	public Texture2D tex;
 	public bool enabled;
@@ -15,7 +14,6 @@ public class UPALayer {
 	// Constructor
 	public UPALayer (UPAImage img) {
 		name = "Layer " + (img.layers.Count + 1);
-		order = img.layers.Count;
 		opacity = 1;
 		
 		map = new Color[img.width * img.height];
@@ -58,6 +56,10 @@ public class UPALayer {
 		
 		tex.filterMode = FilterMode.Point;
 		tex.Apply();
+	}
+	
+	public int GetOrder () {
+		return parentImg.layers.IndexOf (this);
 	}
 
 }
