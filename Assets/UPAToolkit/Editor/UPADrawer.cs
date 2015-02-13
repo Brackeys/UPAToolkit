@@ -13,7 +13,7 @@ public class UPADrawer : MonoBehaviour {
 	
 	private static Color32 toolbarColor = new Color32 (50, 50, 50, 255);
 	
-	private static string[] gridBGStrings = new string[] {"Black", "White"};
+	private static string[] gridBGStrings = new string[] {"Black", "White", "None"};
 	public static Color gridBGColor = Color.black;
 	
 	private static GUIStyle style = new GUIStyle();
@@ -119,27 +119,29 @@ public class UPADrawer : MonoBehaviour {
 		style.fontStyle = FontStyle.Normal;
 		GUI.Label (new Rect (525, 11, 150, 30), "Use WASD to navigate.", style);
 		
-		if (GUI.Button (new Rect (670, 4, 80, 30), "Center View")) {
+		if (GUI.Button (new Rect (684, 4, 55, 30), "Center")) {
 			CurrentImg.gridOffsetX = 0;
 			CurrentImg.gridOffsetY = 0;
 		}
 		
-		CurrentImg.gridBGIndex = GUI.Toolbar (new Rect (760, 4, 90, 30), CurrentImg.gridBGIndex, gridBGStrings);
+		CurrentImg.gridBGIndex = GUI.Toolbar (new Rect (743, 4, 130, 30), CurrentImg.gridBGIndex, gridBGStrings);
 		
 		if (CurrentImg.gridBGIndex == 0) {
 			gridBGColor = Color.black;
-		} else {
+		} else if (CurrentImg.gridBGIndex == 1) {
 			gridBGColor = Color.white;
+		} else {
+			gridBGColor = Color.clear;
 		}
+		
+		Vector2 pixelCoordinate = CurrentImg.GetReadablePixelCoordinate (mousePos);
+		GUI.Label (new Rect (880, 11, 100, 30), "(" + (int)pixelCoordinate.x + "," + (int)pixelCoordinate.y + ")", style);
 
 		if (CurrentImg.tool == UPATool.ColorPicker) {
 			style.fontStyle = FontStyle.Bold;
 			style.fontSize = 15;
 			GUI.Label (new Rect (window.width/2f - 140, 60, 100, 30), "Click on a pixel to choose a color.", style);
 		}
-
-		Vector2 pixelCoordinate = CurrentImg.GetPixelCoordinate (mousePos);
-		GUI.Label (new Rect (860, 11, 100, 30), "(" + (int)pixelCoordinate.x + "," + (int)pixelCoordinate.y + ")", style);
 	}
 
 	public static void DrawLayerPanel (Rect window) {

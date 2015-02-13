@@ -78,7 +78,7 @@ public class UPAImage : ScriptableObject {
 
 		if (pixelCoordinate == new Vector2 (-1, -1))
 			return;
-
+			
 		Undo.RecordObject (layers[layer].tex, "ColorPixel");
 
 		layers[layer].SetPixel ((int)pixelCoordinate.x, (int)pixelCoordinate.y, color);
@@ -160,6 +160,17 @@ public class UPAImage : ScriptableObject {
 		int pixelY = (int)( height * relY ) - 1;
 
 		return new Vector2(pixelX, pixelY);
+	}
+	
+	public Vector2 GetReadablePixelCoordinate (Vector2 pos) {
+		Vector2 coord = GetPixelCoordinate (pos);
+		
+		if (coord.x == -1)
+			return coord;
+		
+		coord.x += 1;
+		coord.y *= -1;
+		return coord;
 	}
 
 	public Texture2D GetFinalImage (bool update) {

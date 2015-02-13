@@ -32,6 +32,20 @@ public class UPALayer {
 		enabled = true;
 		
 		parentImg = img;
+		
+		// Because Unity won't record map (Color[]) as an undo,
+		// we instead register a callback to LoadMapFromTex since undoing textures works fine
+		Undo.undoRedoPerformed += LoadMapFromTex; // subscribe to the undo event
+	}
+	
+	void LoadMapFromTex() {
+	
+		for (int x = 0; x < parentImg.width; x++) {
+			for (int y = 0; y < parentImg.height; y++) {
+				map[x + y * parentImg.width] = tex.GetPixel (x, parentImg.height - y - 1);
+			}
+		}
+
 	}
 	
 	public Color GetPixel (int x, int y) {

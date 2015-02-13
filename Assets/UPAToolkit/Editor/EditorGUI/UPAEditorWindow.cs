@@ -105,8 +105,9 @@ public class UPAEditorWindow : EditorWindow {
 
 		// If key is pressed
 		if (e.button == 0) {
+		
 			// Mouse buttons
-			if (e.isMouse && mousePos.y > 40) {
+			if (e.isMouse && mousePos.y > 40 && e.type != EventType.mouseUp) {
 				if (!UPADrawer.GetLayerPanelRect (window.position).Contains (mousePos)) {
 
 					if (tool == UPATool.Eraser)
@@ -121,6 +122,7 @@ public class UPAEditorWindow : EditorWindow {
 						if (newColor != null && newColor != Color.clear){
 							selectedColor = (Color)newColor;
 						}
+						tool = lastTool;
 					}
 
 				}
@@ -148,6 +150,7 @@ public class UPAEditorWindow : EditorWindow {
 					tool = UPATool.Eraser;
 				}
 				if (e.keyCode == KeyCode.P) {
+					lastTool = tool;
 					tool = UPATool.ColorPicker;
 				}
 				
@@ -166,7 +169,7 @@ public class UPAEditorWindow : EditorWindow {
 					lastTool = tool;
 					tool = UPATool.Eraser;
 				}
-			} else {
+			} else if (e.type == EventType.keyUp && e.keyCode == KeyCode.LeftControl) {
 				if (lastTool != UPATool.Empty) {
 					tool = lastTool;
 					lastTool = UPATool.Empty;
