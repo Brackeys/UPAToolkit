@@ -107,14 +107,12 @@ public class UPAImage : ScriptableObject {
 
 			Color pixel = layers[i].tex.GetPixel(x,y);
 
-			// APPLY THE NORMAL COLOR BLENDING ALGORITHM
+			// This is a blend between two methods of calculating color blending; Alpha blending and premultiplied alpha blending
+			// I have no clue why this actually works but it's very accurate :D
+			float newR = Mathf.Lerp (1f * pixel.r + (1f - pixel.a) * color.r, pixel.a * pixel.r + (1f - pixel.a) * color.r, color.a);
+			float newG = Mathf.Lerp (1f * pixel.g + (1f - pixel.a) * color.g, pixel.a * pixel.g + (1f - pixel.a) * color.g, color.a);
+			float newB = Mathf.Lerp (1f * pixel.b + (1f - pixel.a) * color.b, pixel.a * pixel.b + (1f - pixel.a) * color.b, color.a);
 
-//			float newR = c.a * c.r + (1 - c.a) * bgColor.r;
-//			c0 = Ca * Aa + Cb * Ab * (1 - Aa);
-
-			float newR = pixel.r + color.r * (1 - pixel.a);
-			float newG = pixel.g + color.g * (1 - pixel.a);
-			float newB = pixel.b + color.b * (1 - pixel.a);
 			float newA = pixel.a + color.a * (1 - pixel.a);
 
 			color = new Color (newR, newG, newB, newA);
@@ -132,6 +130,8 @@ public class UPAImage : ScriptableObject {
 		UPALayer layer = layers[from];
 		layers.RemoveAt(from);
 		layers.Insert(to, layer);
+
+		dirty = true;
 	}
 
 	// Get the rect of the image as displayed in the editor
