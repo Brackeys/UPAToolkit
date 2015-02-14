@@ -10,7 +10,7 @@ This project is open for contributions. See [this guide](https://guides.github.c
 
 ###Download
 Download from the Unity Asset Store [here](http://u3d.as/aZ3).
-The newest release can be found in the /Builds/ folder.
+The newest release can be found in the /Builds/ folder or under [releases](https://github.com/Brackeys/UPAToolkit/releases).
 
 ###Software Requirements
 This project is fully compatible with [Unity](http://unity3d.com) Free.
