@@ -46,10 +46,11 @@ namespace AssemblyCSharpEditor
 					Color lower = lowerLayer.GetPixel (x, y);
 					Color upper = upperLayer.GetPixel (x, y);
 					float srca = upper.a * upperOpacity;
-					float outa = srca + lower.a * (1 - srca);
-					Color c = new Color ((upper.r * srca + lower.r * lower.a * (1-srca)) / outa,
-					                     (upper.g * srca + lower.g * lower.a * (1-srca)) / outa,
-					                     (upper.b * srca + lower.b * lower.a * (1-srca)) / outa,
+					float lowa = lower.a * lowerOpacity;
+					float outa = srca + lowa * (1 - srca);
+					Color c = new Color ((upper.r * srca + lower.r * lowa * (1-srca)) / outa,
+					                     (upper.g * srca + lower.g * lowa * (1-srca)) / outa,
+					                     (upper.b * srca + lower.b * lowa * (1-srca)) / outa,
 					                     outa);
 
 					result.SetPixel (x, y, c);
@@ -68,17 +69,19 @@ namespace AssemblyCSharpEditor
 					Color lower = lowerLayer.GetPixel (x, y);
 					Color upper = upperLayer.GetPixel (x, y);
 					float srca = upper.a * upperOpacity;
+					float lowa = lower.a * lowerOpacity;
+
 					Color c = Color.clear;
-					if (srca == 0 && lower.a != 0) {
-						c = new Color(lower.r, lower.g, lower.b, lower.a);
-					} else if (lower.a == 0 && srca != 0){
-						c = new Color(upper.r, upper.g, upper.b, upper.a);
-					} else if (lower.a != 0 && srca != 0) {
-						float outa = srca + lower.a * (1 - srca);
-						c = new Color ((upper.r * srca * lower.r * lower.a) / outa,
-						                     (upper.g * srca * lower.g * lower.a) / outa,
-						                     (upper.b * srca * lower.b * lower.a) / outa,
-						                     outa);
+					if (srca == 0 && lowa != 0) {
+						c = new Color(lower.r, lower.g, lower.b, lowa);
+					} else if (lowa == 0 && srca != 0){
+						c = new Color(upper.r, upper.g, upper.b, srca);
+					} else if (lowa != 0 && srca != 0) {
+						float outa = srca + lowa * (1 - srca);
+						c = new Color ((upper.r * upper.a * lower.r * lower.a) / outa,
+					                     (upper.g * upper.a * lower.g * lower.a) / outa,
+					                     (upper.b * upper.a * lower.b * lower.a) / outa,
+					                     outa);
 					}
 
 					result.SetPixel (x, y, c);
@@ -97,16 +100,17 @@ namespace AssemblyCSharpEditor
 					Color lower = lowerLayer.GetPixel (x, y);
 					Color upper = upperLayer.GetPixel (x, y);
 					float srca = upper.a * upperOpacity;
+					float lowa = lower.a * lowerOpacity;
 					Color c = Color.clear;
-					if (srca == 0 && lower.a != 0) {
-						c = new Color(lower.r, lower.g, lower.b, lower.a);
-					} else if (lower.a == 0 && srca != 0){
-						c = new Color(upper.r, upper.g, upper.b, upper.a);
-					} else if (lower.a != 0 && srca != 0) {
-						float outa = srca + lower.a * (1 - srca);
-						c = new Color ((1 - (1 - upper.r * srca) * (1 - lower.r * lower.a)) / outa,
-						               (1 - (1 - upper.g * srca) * (1 - lower.g * lower.a)) / outa,
-						               (1 - (1 - upper.b * srca) * (1 - lower.b * lower.a)) / outa,
+					if (srca == 0 && lowa != 0) {
+						c = new Color(lower.r, lower.g, lower.b, lowa);
+					} else if (lowa == 0 && srca != 0){
+						c = new Color(upper.r, upper.g, upper.b, srca);
+					} else if (lowa != 0 && srca != 0) {
+						float outa = srca + lowa * (1 - srca);
+						c = new Color ((1 - (1 - upper.r * srca) * (1 - lower.r * lowa)) / outa,
+						               (1 - (1 - upper.g * srca) * (1 - lower.g * lowa)) / outa,
+						               (1 - (1 - upper.b * srca) * (1 - lower.b * lowa)) / outa,
 						               outa);
 					}
 					

@@ -2,6 +2,7 @@
 using UnityEditor;
 using System.Collections.Generic;
 using AssemblyCSharpEditor;
+using System.IO;
 
 public class UPADrawer : MonoBehaviour {
 	
@@ -58,7 +59,7 @@ public class UPADrawer : MonoBehaviour {
 				if (result == null) {
 					result = UPABlendModes.Blend (layers[i + 1].tex, layers[i + 1].opacity, layers[i].tex, layers[i].opacity, layers[i].mode);
 				} else {
-					result = UPABlendModes.Blend (layers[i + 1].tex, layers[i + 1].opacity, result, layers[i].opacity, layers[i].mode);
+					result = UPABlendModes.Blend (layers[i + 1].tex, layers[i + 1].opacity, result, 1, layers[i].mode);
 				}
 			}
 
@@ -204,20 +205,16 @@ public class UPADrawer : MonoBehaviour {
 			if (removeLayerIcon == null)
 				removeLayerIcon = (Texture2D)Resources.Load ("UI/CrossWhite");
 
-			if (GUI.Button (new Rect (80, window.height - 43 - i * 36, 15, 15), removeLayerIcon,style)) {
-				if (CurrentImg.layers.Count > 1) {
-					bool delete = EditorUtility.DisplayDialog(
-						"Delete Layer",
-						"Do you want to remove " + CurrentImg.layers[i].name + "?",
-						"Delete",
-						"Cancel");
-
-					if (delete) {
-						CurrentImg.RemoveLayerAt(i);
-						continue;
-					}
+			if (tempLayer.locked) {
+				if (GUI.Button (new Rect (80, window.height - 43 - i * 36, 15, 15), Resources.Load("UI/locked") as Texture2D,style)) {
+					tempLayer.locked = false;
+				}
+			} else {
+				if (GUI.Button (new Rect (80, window.height - 43 - i * 36, 15, 15), Resources.Load("UI/unlocked") as Texture2D,style)) {
+					tempLayer.locked = true;
 				}
 			}
+
 			
 			if (i + 1 < CurrentImg.layers.Count) {
 				if (GUI.Button (new Rect (97, window.height - 60  - i * 36, 22, 16), "+")) {
@@ -249,15 +246,53 @@ public class UPADrawer : MonoBehaviour {
 			CurrentImg.AddLayer ();
 		}
 
-		//if (GUI.Button (new Rect (12 + 18, window.height - 18, 16, 16),  Resources.Load("UI/delete") as Texture2D, style)) {
-		//	CurrentImg.AddLayer ();
-		//}
+		if (GUI.Button (new Rect (12 + 20, window.height - 20, 18, 18),  Resources.Load("UI/delete") as Texture2D, style)) {
+			if (CurrentImg.layers.Count > 1) {
+				bool delete = EditorUtility.DisplayDialog(
+					"Delete Layer",
+					"Do you want to remove " + CurrentImg.layers[CurrentImg.selectedLayer].name + "?",
+					"Delete",
+					"Cancel");
+				
+				if (delete) {
+					CurrentImg.RemoveLayerAt(CurrentImg.selectedLayer);
+				}
+			}
+		}
 
-		if (GUI.Button (new Rect (12 + 20 * 1, window.height - 20, 18, 18), Resources.Load("UI/duplicate") as Texture2D, style)) {
+		if (GUI.Button (new Rect (12 + 20 * 2, window.height - 20, 18, 18),  Resources.Load("UI/import") as Texture2D, style)) {
+			string path = EditorUtility.OpenFilePanel(
+				"Find a Image (.jpg | .png)",
+				"/",
+				"Image Files;*.jpg;*.png");
+			
+			if (path.Length != 0) {
+				// Load Texture from file
+				Texture2D tex = null;
+				byte[] fileData;
+				if (File.Exists(path))     {
+					fileData = File.ReadAllBytes(path);
+					tex = new Texture2D(2, 2);
+					tex.LoadImage(fileData); //..this will auto-resize the texture dimensions.
+				}
+				// Create a new Image with textures dimensions
+				CurrentImg.AddLayer();
+				// Set pixel colors
+				UPALayer layer = CurrentImg.layers[CurrentImg.layers.Count - 1];
+				for (int x = 0; x < CurrentImg.width; x++) {
+					for (int y = 0; y < CurrentImg.height; y++) {
+						layer.map[x + y * CurrentImg.width] = tex.GetPixel(x, CurrentImg.height - 1 - y);
+					}
+				}
+				layer.LoadTexFromMap();
+			}
+		}
+
+		if (GUI.Button (new Rect (12 + 20 * 3, window.height - 20, 18, 18), Resources.Load("UI/duplicate") as Texture2D, style)) {
 			CurrentImg.layers.Add(new UPALayer(CurrentImg.layers[CurrentImg.selectedLayer]));
 		}
 
-		if (GUI.Button (new Rect (12 + 20 * 2, window.height - 20, 18, 18), Resources.Load("UI/merge") as Texture2D, style)) {
+		if (GUI.Button (new Rect (12 + 20 * 4, window.height - 20, 18, 18), Resources.Load("UI/merge") as Texture2D, style)) {
 			UPALayer upper = CurrentImg.layers[CurrentImg.selectedLayer];
 			UPALayer lower = CurrentImg.layers[CurrentImg.selectedLayer - 1];
 			lower.tex = UPABlendModes.Blend(lower.tex, lower.opacity, upper.tex, upper.opacity, upper.mode);
@@ -277,7 +312,7 @@ public class UPADrawer : MonoBehaviour {
 		//	CurrentImg.AddLayer ();
 		//}
 
-		if (GUI.Button (new Rect (12 + 20 * 3, window.height - 20, 18, 18),  Resources.Load("UI/edit") as Texture2D, style)) {
+		if (GUI.Button (new Rect (12 + 20 * 5, window.height - 20, 18, 18),  Resources.Load("UI/edit") as Texture2D, style)) {
 			UPALayerSettings.Init(CurrentImg.layers[CurrentImg.selectedLayer]);
 		}
 

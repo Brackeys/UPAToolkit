@@ -13,6 +13,7 @@ public class UPALayer {
 	public bool enabled;
 	public float opacity;
 	public BlendMode mode;
+	public bool locked;
 	
 	public UPAImage parentImg;
 	
@@ -36,7 +37,7 @@ public class UPALayer {
 		tex.Apply ();
 		
 		enabled = true;
-		
+		locked = false;
 		parentImg = img;
 		
 		// Because Unity won't record map (Color[]) as an undo,
@@ -58,7 +59,7 @@ public class UPALayer {
 		tex.Apply ();
 		
 		enabled = true;
-		
+		locked = original.locked;
 		parentImg = original.parentImg;
 
 		// Because Unity won't record map (Color[]) as an undo,
@@ -81,10 +82,12 @@ public class UPALayer {
 	}
 	
 	public void SetPixel (int x, int y, Color color) {
-		tex.SetPixel (x, y, color);
-		tex.Apply();
+		if (!locked) {
+			tex.SetPixel (x, y, color);
+			tex.Apply ();
 		
-		map [x + y * - 1 * parentImg.width - parentImg.height] = color;
+			map [x + y * - 1 * parentImg.width - parentImg.height] = color;
+		}
 	}
 	
 	public void LoadTexFromMap () {
