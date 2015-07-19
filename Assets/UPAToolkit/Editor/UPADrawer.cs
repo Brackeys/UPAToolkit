@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
+using System.Collections.Generic;
+using AssemblyCSharpEditor;
 
 public class UPADrawer : MonoBehaviour {
 	
@@ -39,13 +41,35 @@ public class UPADrawer : MonoBehaviour {
 		EditorGUI.DrawTextureTransparent (texPos, bg);
 		DestroyImmediate (bg);
 
-		// Draw image
-		for (int i = 0; i < img.layers.Count; i++)
+		List<UPALayer> layers = new List<UPALayer> ();
+		// Invert list and remove disabled layers
+		for (int i = img.layers.Count - 1; i >= 0; i--)
 		{
 			if (!img.layers[i].enabled)
 				continue;
 
-			GUI.DrawTexture (texPos, img.layers[i].tex);
+			layers.Add(img.layers[i]);
+		}
+
+		if (layers.Count > 0) {
+			// Calculate blended image
+			Texture2D result = null;
+			for (int i = 0; i < layers.Count - 1; i++) {
+				if (result == null) {
+					result = UPABlendModes.Blend (layers[i + 1].tex, layers[i + 1].opacity, layers[i].tex, layers[i].opacity, layers[i].mode);
+				} else {
+					result = UPABlendModes.Blend (layers[i + 1].tex, layers[i + 1].opacity, result, layers[i].opacity, layers[i].mode);
+				}
+			}
+
+			// Draw image
+			if (result == null) {
+				GUI.DrawTexture (texPos, layers[0].tex);
+			} else {
+				result.SetPixel (1, 1, Color.black);
+				GUI.DrawTexture (texPos, result);
+				//GUI.DrawTexture (texPos, result);
+			}
 		}
 	
 		// Draw a grid above the image (y axis first)
@@ -144,6 +168,13 @@ public class UPADrawer : MonoBehaviour {
 		}
 	}
 
+	static void Callback (object obj) {
+		Debug.Log ("Selected: " + obj);
+	}
+	static void Callback () {
+		Debug.Log ("No object passed");
+	}
+	
 	public static void DrawLayerPanel (Rect window) {
 		
 		style.imagePosition = ImagePosition.ImageAbove;
@@ -158,21 +189,22 @@ public class UPADrawer : MonoBehaviour {
 			}
 
 			UPALayer tempLayer = CurrentImg.layers[i];
-			if (GUI.Button (new Rect (12, window.height - 40 - i * 36, 65, 33), "")) {
+			if (GUI.Button (new Rect (12, window.height - 60 - i * 36, 65, 33), "")) {
 				CurrentImg.selectedLayer = i;
 			}
+
 			GUI.backgroundColor = Color.white;
-			GUI.Label (new Rect (15, window.height - 32 - i * 36, 90, 30), tempLayer.name);
+			GUI.Label (new Rect (15, window.height - 52 - i * 36, 90, 30), tempLayer.name);
 
 			bool layerEnabled = tempLayer.enabled;
-			tempLayer.enabled = GUI.Toggle (new Rect (80, window.height - 41 - i * 36, 15, 15), tempLayer.enabled, "");
+			tempLayer.enabled = GUI.Toggle (new Rect (80, window.height - 61 - i * 36, 15, 15), tempLayer.enabled, "");
 			if (tempLayer.enabled != layerEnabled)
 				tempLayer.parentImg.dirty = true;
 
 			if (removeLayerIcon == null)
 				removeLayerIcon = (Texture2D)Resources.Load ("UI/CrossWhite");
 
-			if (GUI.Button (new Rect (80, window.height - 23 - i * 36, 15, 15), removeLayerIcon,style)) {
+			if (GUI.Button (new Rect (80, window.height - 43 - i * 36, 15, 15), removeLayerIcon,style)) {
 				if (CurrentImg.layers.Count > 1) {
 					bool delete = EditorUtility.DisplayDialog(
 						"Delete Layer",
@@ -188,14 +220,14 @@ public class UPADrawer : MonoBehaviour {
 			}
 			
 			if (i + 1 < CurrentImg.layers.Count) {
-				if (GUI.Button (new Rect (97, window.height - 40  - i * 36, 22, 16), "+")) {
+				if (GUI.Button (new Rect (97, window.height - 60  - i * 36, 22, 16), "+")) {
 					from = i;
 					to = i + 1;
 				}
 			}
 			
 			if (i > 0) {
-				if (GUI.Button (new Rect (97, window.height - 24 - i * 36, 22, 16), "-")) {
+				if (GUI.Button (new Rect (97, window.height - 44 - i * 36, 22, 16), "-")) {
 					from = i;
 					to = i - 1;
 				}
@@ -208,10 +240,48 @@ public class UPADrawer : MonoBehaviour {
 			CurrentImg.ChangeLayerPosition (from, to);
 		}
 
-		if (GUI.Button (new Rect (12, window.height - 32 - CurrentImg.layers.Count * 36, 85, 25), "New Layer")) {
+		GUIStyle smalButton = new GUIStyle();
+		smalButton.fontSize = 8;
+		smalButton.alignment = TextAnchor.MiddleCenter;
+		smalButton.normal.background = Resources.Load ("Background") as Texture2D;
+
+		if (GUI.Button (new Rect (12, window.height - 20, 18, 18), Resources.Load("UI/add") as Texture2D, smalButton)) {
 			CurrentImg.AddLayer ();
 		}
-		
+
+		//if (GUI.Button (new Rect (12 + 18, window.height - 18, 16, 16),  Resources.Load("UI/delete") as Texture2D, style)) {
+		//	CurrentImg.AddLayer ();
+		//}
+
+		if (GUI.Button (new Rect (12 + 20 * 1, window.height - 20, 18, 18), Resources.Load("UI/duplicate") as Texture2D, style)) {
+			CurrentImg.layers.Add(new UPALayer(CurrentImg.layers[CurrentImg.selectedLayer]));
+		}
+
+		if (GUI.Button (new Rect (12 + 20 * 2, window.height - 20, 18, 18), Resources.Load("UI/merge") as Texture2D, style)) {
+			UPALayer upper = CurrentImg.layers[CurrentImg.selectedLayer];
+			UPALayer lower = CurrentImg.layers[CurrentImg.selectedLayer - 1];
+			lower.tex = UPABlendModes.Blend(lower.tex, lower.opacity, upper.tex, upper.opacity, upper.mode);
+			for (int x = 0; x < lower.tex.width; x++) {
+				for (int y = 0; y < lower.tex.height; y++) {
+					lower.map[x + y * lower.tex.width] = lower.tex.GetPixel(x, lower.tex.height - 1 - y);
+				}
+			}
+			CurrentImg.RemoveLayerAt(CurrentImg.selectedLayer);
+		}
+
+		//if (GUI.Button (new Rect (12 + 18 * 4, window.height - 18, 16, 16),  Resources.Load("UI/up") as Texture2D, style)) {
+		//	CurrentImg.AddLayer ();
+		//}
+
+		//if (GUI.Button (new Rect (12 + 18 * 5, window.height - 18, 16, 16),  Resources.Load("UI/down") as Texture2D, style)) {
+		//	CurrentImg.AddLayer ();
+		//}
+
+		if (GUI.Button (new Rect (12 + 20 * 3, window.height - 20, 18, 18),  Resources.Load("UI/edit") as Texture2D, style)) {
+			UPALayerSettings.Init(CurrentImg.layers[CurrentImg.selectedLayer]);
+		}
+
+
 		//CurrentImg.selectedLayer = GUI.Toolbar (new Rect (4, window.height - 200, 90, 30), CurrentImg.selectedLayer, layerNames);
 	}
 	
