@@ -8,11 +8,11 @@ using System.IO;
 
 public class UPASession {
 
-	public static void CreateImage (int w, int h) {
+	public static UPAImage CreateImage (int w, int h) {
 		string path = EditorUtility.SaveFilePanel ("Create UPAImage",
 		                                           "Assets/", "Pixel Image.asset", "asset");
 		if (path == "") {
-			return;
+			return null;
 		}
 		
 		path = FileUtil.GetProjectRelativePath(path);
@@ -34,22 +34,53 @@ public class UPASession {
 			UPAEditorWindow.Init();
 
 		img.gridSpacing = 10 - Mathf.Abs (img.width - img.height)/100f;
+		return img;
 	}
 
 	public static UPAImage OpenImage () {
 		string path = EditorUtility.OpenFilePanel(
 			"Find a UPAImage (.asset)",
 			"Assets/",
-			"asset");
+			"Image Files;*.asset;*.jpg;*.png");
 		
 		if (path.Length != 0) {
-			path = FileUtil.GetProjectRelativePath(path);
-			UPAImage img = AssetDatabase.LoadAssetAtPath(path, typeof(UPAImage)) as UPAImage;
-			EditorPrefs.SetString ("currentImgPath", path);
-			return img;
+			// Check if the loaded file is an Asset or Image
+			if (path.EndsWith(".asset")) {
+				path = FileUtil.GetProjectRelativePath(path);
+				UPAImage img = AssetDatabase.LoadAssetAtPath(path, typeof(UPAImage)) as UPAImage;
+				EditorPrefs.SetString ("currentImgPath", path);
+				return img;
+			}
+			else
+			{
+				// Load Texture from file
+				Texture2D tex = LoadImageFromFile(path);
+				// Create a new Image with textures dimensions
+				UPAImage img = CreateImage(tex.width, tex.height);
+				// Set pixel colors
+				img.layers[0].tex = tex;
+				img.layers[0].tex.filterMode = FilterMode.Point;
+				img.layers[0].tex.Apply ();
+				for (int x = 0; x < img.width; x++) {
+					for (int y = 0; y < img.height; y++) {
+						img.layers[0].map[x + y * tex.width] = tex.GetPixel(x, tex.height - 1 - y);
+					}
+				}
+			}
 		}
 		
 		return null;
+	}
+
+	public static Texture2D LoadImageFromFile (string path) {
+		Texture2D tex = null;
+		byte[] fileData;
+		if (File.Exists(path))     {
+			fileData = File.ReadAllBytes(path);
+			tex = new Texture2D(2, 2);
+			tex.LoadImage(fileData); //..this will auto-resize the texture dimensions.
+		}
+		return tex;
 	}
 	
 	public static UPAImage OpenImageByAsset (UPAImage img) {
