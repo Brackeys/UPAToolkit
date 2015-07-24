@@ -47,14 +47,7 @@ public class UPAImage : ScriptableObject {
 	private int _selectedLayer = 0;
 	public int selectedLayer {
 		get {
-			if (_selectedLayer > layerCount - 1)
-			{
-				_selectedLayer = 0;
-				return 0;
-			}
-			else {
- 				return _selectedLayer;
-			}
+			return Mathf.Clamp(_selectedLayer, 0, layerCount);
 		}
 		set { _selectedLayer = value; }
 	}
@@ -232,7 +225,7 @@ public class UPAImage : ScriptableObject {
 
 		layers.RemoveAt (index);
 		if (selectedLayer == index) {
-			selectedLayer -= 1;
+			selectedLayer = index - 1;
 		}
 	}
 }
