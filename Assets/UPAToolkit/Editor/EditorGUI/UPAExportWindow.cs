@@ -15,11 +15,18 @@ public class UPAExportWindow : EditorWindow {
 	
 	private TextureType texType = TextureType.sprite;
 	private TextureExtension texExtension = TextureExtension.PNG;
-
+	
 	public static void Init (UPAImage img) {
 		// Get existing open window or if none, make new one
 		window = (UPAExportWindow)EditorWindow.GetWindow (typeof (UPAExportWindow));
+		#if UNITY_4_3
 		window.title = "Export Image";
+		#elif UNITY_4_6
+		window.title = "Export Image";
+		#else
+		window.titleContent = new GUIContent ("Export Image");
+		#endif
+		
 		
 		window.position = new Rect(Screen.width/2 + 260/2f,Screen.height/2 - 80, 260, 170);
 		window.ShowPopup();
@@ -47,7 +54,7 @@ public class UPAExportWindow : EditorWindow {
 		EditorGUILayout.Space ();
 		
 		if ( GUILayout.Button ("Export", GUILayout.Height(30)) ) {
-		
+			
 			if (exportImg == null) {
 				EditorUtility.DisplayDialog(
 					"Select Image",
@@ -55,7 +62,7 @@ public class UPAExportWindow : EditorWindow {
 					"Ok");
 				return;
 			}	
-		
+			
 			bool succes = UPASession.ExportImage ( exportImg, texType, texExtension );
 			if (succes)
 				this.Close();
