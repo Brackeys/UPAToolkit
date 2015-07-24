@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
 using AssemblyCSharpEditor;
@@ -237,16 +237,21 @@ public class UPADrawer : MonoBehaviour {
 			CurrentImg.ChangeLayerPosition (from, to);
 		}
 
-		GUIStyle smalButton = new GUIStyle();
-		smalButton.fontSize = 8;
-		smalButton.alignment = TextAnchor.MiddleCenter;
-		smalButton.normal.background = Resources.Load ("Background") as Texture2D;
+		GUIStyle smallButon = new GUIStyle();
+		smallButon.fontSize = 8;
+		smallButon.alignment = TextAnchor.MiddleCenter;
+		smallButon.normal.background = Resources.Load ("Background") as Texture2D;
 
-		if (GUI.Button (new Rect (12, window.height - 20, 18, 18), Resources.Load("UI/add") as Texture2D, smalButton)) {
+		if (GUI.Button (new Rect (12, window.height - 20, 18, 18), new GUIContent(Resources.Load("UI/add") as Texture, "Add Layer"), smallButon)) {
 			CurrentImg.AddLayer ();
 		}
 
-		if (GUI.Button (new Rect (12 + 20, window.height - 20, 18, 18),  Resources.Load("UI/delete") as Texture2D, style)) {
+		if (CurrentImg.layerCount == 1)
+		{
+			GUI.contentColor = new Color(0.7f, 0.7f, 0.7f);
+		}
+		if (GUI.Button(new Rect(12 + 20, window.height - 20, 18, 18), new GUIContent(Resources.Load("UI/delete") as Texture, "Delete Layer"), smallButon))
+		{
 			if (CurrentImg.layers.Count > 1) {
 				bool delete = EditorUtility.DisplayDialog(
 					"Delete Layer",
@@ -259,8 +264,10 @@ public class UPADrawer : MonoBehaviour {
 				}
 			}
 		}
+		GUI.contentColor = Color.white;
 
-		if (GUI.Button (new Rect (12 + 20 * 2, window.height - 20, 18, 18),  Resources.Load("UI/import") as Texture2D, style)) {
+		if (GUI.Button(new Rect(12 + 20 * 2, window.height - 20, 18, 18), new GUIContent(Resources.Load("UI/import") as Texture, "Import Image"), smallButon))
+		{
 			string path = EditorUtility.OpenFilePanel(
 				"Find a Image (.jpg | .png)",
 				"/",
@@ -288,21 +295,33 @@ public class UPADrawer : MonoBehaviour {
 			}
 		}
 
-		if (GUI.Button (new Rect (12 + 20 * 3, window.height - 20, 18, 18), Resources.Load("UI/duplicate") as Texture2D, style)) {
+		if (GUI.Button(new Rect(12 + 20 * 3, window.height - 20, 18, 18), new GUIContent(Resources.Load("UI/duplicate") as Texture, "Duplicate Layer"), smallButon))
+		{
 			CurrentImg.layers.Add(new UPALayer(CurrentImg.layers[CurrentImg.selectedLayer]));
 		}
 
-		if (GUI.Button (new Rect (12 + 20 * 4, window.height - 20, 18, 18), Resources.Load("UI/merge") as Texture2D, style)) {
-			UPALayer upper = CurrentImg.layers[CurrentImg.selectedLayer];
-			UPALayer lower = CurrentImg.layers[CurrentImg.selectedLayer - 1];
-			lower.tex = UPABlendModes.Blend(lower.tex, lower.opacity, upper.tex, upper.opacity, upper.mode);
-			for (int x = 0; x < lower.tex.width; x++) {
-				for (int y = 0; y < lower.tex.height; y++) {
-					lower.map[x + y * lower.tex.width] = lower.tex.GetPixel(x, lower.tex.height - 1 - y);
-				}
-			}
-			CurrentImg.RemoveLayerAt(CurrentImg.selectedLayer);
+		if (CurrentImg.selectedLayer == 0)
+		{
+			GUI.contentColor = new Color(0.7f, 0.7f, 0.7f);
 		}
+		if (GUI.Button(new Rect(12 + 20 * 4, window.height - 20, 18, 18), new GUIContent(Resources.Load("UI/merge") as Texture, "Merge Layer Down"), smallButon))
+		{
+			if (CurrentImg.selectedLayer > 0)
+			{
+				UPALayer upper = CurrentImg.layers[CurrentImg.selectedLayer];
+				UPALayer lower = CurrentImg.layers[CurrentImg.selectedLayer - 1];
+				lower.tex = UPABlendModes.Blend(lower.tex, lower.opacity, upper.tex, upper.opacity, upper.mode);
+				for (int x = 0; x < lower.tex.width; x++)
+				{
+					for (int y = 0; y < lower.tex.height; y++)
+					{
+						lower.map[x + y * lower.tex.width] = lower.tex.GetPixel(x, lower.tex.height - 1 - y);
+					}
+				}
+				CurrentImg.RemoveLayerAt(CurrentImg.selectedLayer);
+			}
+		}
+		GUI.contentColor = Color.white;
 
 		//if (GUI.Button (new Rect (12 + 18 * 4, window.height - 18, 16, 16),  Resources.Load("UI/up") as Texture2D, style)) {
 		//	CurrentImg.AddLayer ();
@@ -312,10 +331,14 @@ public class UPADrawer : MonoBehaviour {
 		//	CurrentImg.AddLayer ();
 		//}
 
-		if (GUI.Button (new Rect (12 + 20 * 5, window.height - 20, 18, 18),  Resources.Load("UI/edit") as Texture2D, style)) {
+		if (GUI.Button(new Rect(12 + 20 * 5, window.height - 20, 18, 18), new GUIContent(Resources.Load("UI/edit") as Texture, "Layer Options"), smallButon))
+		{
 			UPALayerSettings.Init(CurrentImg.layers[CurrentImg.selectedLayer]);
 		}
 
+		// Draw layer button tooltips
+		if (GUI.tooltip != "")
+			GUI.Box(new Rect(12, window.height - 43, 120, 20), GUI.tooltip);
 
 		//CurrentImg.selectedLayer = GUI.Toolbar (new Rect (4, window.height - 200, 90, 30), CurrentImg.selectedLayer, layerNames);
 	}

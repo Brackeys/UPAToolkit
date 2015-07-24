@@ -1,10 +1,10 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEditor;
 
 [System.Serializable]
 public class UPALayer {
 	public enum BlendMode {
-		NORMAL, MULTIPLY, SCREEN, OVERLAY, HARD_LIGHT, SOFT_LIGHT
+		NORMAL, MULTIPLY, SCREEN
 	};
 
 	public string name;

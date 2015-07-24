@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------
+//-----------------------------------------------------------------
 // This script handles the layer settings window.
 // At the moment all changes are aplied instantly. Maybe add a
 // preview and make changes cancelable
@@ -13,7 +13,7 @@ public class UPALayerSettings : EditorWindow {
 	
 	public UPALayer layer;
 	
-	private string name;
+	private new string name;
 
 	public static void Init (UPALayer layer) {
 		// Get existing open window or if none, make new one
@@ -30,7 +30,7 @@ public class UPALayerSettings : EditorWindow {
 		// Edit name and visibility
 		GUILayout.Label ("General", EditorStyles.boldLabel);
 		layer.name = EditorGUILayout.TextField ("Name: ", layer.name);
-		layer.enabled = EditorGUILayout.Toggle ("Visible: ", layer.enabled);
+		layer.enabled = EditorGUILayout.Toggle ("Enabled: ", layer.enabled);
 		//exportImg = (UPAImage)EditorGUILayout.ObjectField (exportImg, typeof(UPAImage), false);
 
 		// Edit blend mode and opacity
