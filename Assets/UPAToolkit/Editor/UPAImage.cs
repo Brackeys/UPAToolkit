@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------
+//-----------------------------------------------------------------
 // This class stores all information about the image.
 // It has a full pixel map, width & height properties and some private project data.
 // It also hosts functions for calculating how the pixels should be visualized in the editor.
@@ -24,6 +24,10 @@ public class UPAImage : ScriptableObject {
 	public int height;
 
 	public List<UPALayer> layers;
+	public int layerCount
+	{
+		get { return layers.Count; }
+	}
 
 	public Texture2D finalImg;
 
@@ -39,7 +43,14 @@ public class UPAImage : ScriptableObject {
 	public float gridOffsetY = 0;
 	public float gridOffsetX = 0;
 
-	public int selectedLayer = 0;
+	//Make sure we always get a valid layer
+	private int _selectedLayer = 0;
+	public int selectedLayer {
+		get {
+			return Mathf.Clamp(_selectedLayer, 0, layerCount);
+		}
+		set { _selectedLayer = value; }
+	}
 	
 	
 	// PAINTING SETTINGS
@@ -78,7 +89,7 @@ public class UPAImage : ScriptableObject {
 
 		if (pixelCoordinate == new Vector2 (-1, -1))
 			return;
-			
+
 		Undo.RecordObject (layers[layer].tex, "ColorPixel");
 
 		layers[layer].SetPixel ((int)pixelCoordinate.x, (int)pixelCoordinate.y, color);
@@ -214,7 +225,7 @@ public class UPAImage : ScriptableObject {
 
 		layers.RemoveAt (index);
 		if (selectedLayer == index) {
-			selectedLayer -= 1;
+			selectedLayer = index - 1;
 		}
 	}
 }
