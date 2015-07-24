@@ -183,6 +183,9 @@ public class UPADrawer : MonoBehaviour {
 		int from = 0;
 		int to = 0;
 
+		if (CurrentImg == null)
+			return;
+
 		for (int i = 0; i < CurrentImg.layers.Count; i++) {
 			GUI.backgroundColor = Color.white;
 			if (i == CurrentImg.selectedLayer) {
@@ -269,7 +272,7 @@ public class UPADrawer : MonoBehaviour {
 		if (GUI.Button(new Rect(12 + 20 * 2, window.height - 20, 18, 18), new GUIContent(Resources.Load("UI/import") as Texture, "Import Image"), smallButon))
 		{
 			string path = EditorUtility.OpenFilePanel(
-				"Find a Image (.jpg | .png)",
+				"Find an Image (.jpg | .png)",
 				"/",
 				"Image Files;*.jpg;*.png");
 			

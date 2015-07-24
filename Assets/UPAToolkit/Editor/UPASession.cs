@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------
+//-----------------------------------------------------------------
 // This class hosts utility methods for handling session information.
 //-----------------------------------------------------------------
 
@@ -39,7 +39,7 @@ public class UPASession {
 
 	public static UPAImage OpenImage () {
 		string path = EditorUtility.OpenFilePanel(
-			"Find a UPAImage (.asset)",
+			"Find an Image (.asset | .png | .jpg)",
 			"Assets/",
 			"Image Files;*.asset;*.jpg;*.png");
 		

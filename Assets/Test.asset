@@ -9,7 +9,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b5d402f598c2042759f69fa56f14b05b, type: 3}
-  m_Name: Pixel Image
+  m_Name: Test
   m_EditorClassIdentifier: 
   width: 0
   height: 0
@@ -18,7 +18,6 @@ MonoBehaviour:
   _gridSpacing: 20
   gridOffsetY: 0
   gridOffsetX: 0
-  selectedLayer: 0
   selectedColor: {r: 1, g: 0, b: 0, a: 1}
   tool: 0
   gridBGIndex: 0
