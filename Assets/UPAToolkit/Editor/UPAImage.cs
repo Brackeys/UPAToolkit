@@ -189,12 +189,7 @@ public class UPAImage : ScriptableObject {
 		if (!dirty && finalImg != null || !update && finalImg != null)
 			return finalImg;
 
-		finalImg = new Texture2D(width, height);
-		for (int x = 0; x < width; x++) {
-			for (int y = 0; y < height; y++) {
-				finalImg.SetPixel (x,y, GetBlendedPixel (x,y));
-			}
-		}
+		finalImg = UPADrawer.CalculateBlendedTex(layers);
 		finalImg.filterMode = FilterMode.Point;
 		finalImg.Apply();
 

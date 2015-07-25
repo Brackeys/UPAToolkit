@@ -42,6 +42,10 @@ public class UPALayerSettings : EditorWindow {
 		// Edit blend mode and opacity
 		GUILayout.Label ("Blending", EditorStyles.boldLabel);
 		layer.mode = (UPALayer.BlendMode) EditorGUILayout.EnumPopup ("Mode: ", layer.mode);
+		if (layer.mode != UPALayer.BlendMode.NORMAL)
+		{
+			GUILayout.Label("Some blend modes are still in testing and might not produce\nentirely accurate results.");
+		}
 		layer.opacity = EditorGUILayout.IntSlider ("Opacity: ", Mathf.RoundToInt(layer.opacity * 100), 0, 100) / 100f;
 	}
 }
