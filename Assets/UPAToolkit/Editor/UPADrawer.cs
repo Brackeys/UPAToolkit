@@ -42,36 +42,12 @@ public class UPADrawer : MonoBehaviour {
 		EditorGUI.DrawTextureTransparent (texPos, bg);
 		DestroyImmediate (bg);
 
-		List<UPALayer> layers = new List<UPALayer> ();
-		// Invert list and remove disabled layers
-		for (int i = img.layers.Count - 1; i >= 0; i--)
-		{
-			if (!img.layers[i].enabled)
-				continue;
+		//Calculate the final image from the layers list
+		Texture2D _result = CalculateBlendedTex(img.layers);
 
-			layers.Add(img.layers[i]);
-		}
-
-		if (layers.Count > 0) {
-			// Calculate blended image
-			Texture2D result = null;
-			for (int i = 0; i < layers.Count - 1; i++) {
-				if (result == null) {
-					result = UPABlendModes.Blend (layers[i + 1].tex, layers[i + 1].opacity, layers[i].tex, layers[i].opacity, layers[i].mode);
-				} else {
-					result = UPABlendModes.Blend (layers[i + 1].tex, layers[i + 1].opacity, result, 1, layers[i].mode);
-				}
-			}
-
-			// Draw image
-			if (result == null) {
-				GUI.DrawTexture (texPos, layers[0].tex);
-			} else {
-				result.SetPixel (1, 1, Color.black);
-				GUI.DrawTexture (texPos, result);
-				//GUI.DrawTexture (texPos, result);
-			}
-		}
+		//Draw the image
+		_result.SetPixel(1, 1, Color.black);
+		GUI.DrawTexture(texPos, _result);
 	
 		// Draw a grid above the image (y axis first)
 		for (int x = 0; x <= img.width; x += 1) {
@@ -82,6 +58,45 @@ public class UPADrawer : MonoBehaviour {
 		for (int y = 0; y <= img.height; y += 1) {
 			float posY = texPos.yMin + ( (float)texPos.height / (float)img.height ) * y - 0.2f;
 			EditorGUI.DrawRect (new Rect (texPos.xMin, posY, texPos.width, 1), gridBGColor);
+		}
+	}
+
+	// Calculates the blended image given a list of layers
+	public static Texture2D CalculateBlendedTex(List<UPALayer> _layers)
+	{
+		if (_layers.Count > 0)
+		{
+			// Calculate blended image
+			Texture2D _result = null;
+			for (int i = 0; i < _layers.Count; i++)
+			{
+				if (!_layers[i].enabled)
+					continue;
+
+				if (_result == null)
+				{
+					_result = UPABlendModes.Blend(_layers[i].tex, _layers[i].opacity, _layers[i].tex, _layers[i].opacity, _layers[i].mode);
+				}
+				else
+				{
+					_result = UPABlendModes.Blend(_result, 1, _layers[i].tex, _layers[i].opacity, _layers[i].mode);
+				}
+			}
+			if (_result == null)
+			{
+				Texture2D _empty = new Texture2D(1, 1);
+				_empty.SetPixel(0, 0, Color.clear);
+				_empty.Apply();
+				return _empty;	
+			}
+			return _result;
+		}
+		else
+		{
+			Texture2D _empty = new Texture2D(1, 1);
+			_empty.SetPixel(0, 0, Color.clear);
+			_empty.Apply();
+			return _empty;	
 		}
 	}
 
