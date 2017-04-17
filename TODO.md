@@ -1,7 +1,7 @@
-##TODO List
+## TODO List
 (The following list is in no particular order.)
 
-####Features & Improvements
+#### Features & Improvements
 - Add BoxBrush for coloring multiple pixels at once
 - Add secondary color for easy switching
 - Add grab tool (alt + left click)
@@ -9,6 +9,6 @@
 - Add move tool
 - Generate grid as image instead of drawing rects
 
-####Bug fixes
+#### Bug fixes
 - Fix image zooming on Mac
 - Revisit shortcuts on windows
